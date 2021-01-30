@@ -1,8 +1,10 @@
 import { IParserStrategy } from './parserStrategy.interface';
 import { WorkSheet, CellAddress, CellObject, utils } from 'xlsx';
 import IValue from './value.interface';
-import createKey from '../Utils/hash.function';
+import generateAndUpdateKey from '../Utils/hash.function';
 import { findCellByValue } from '../Utils/xlsx.utils.functions';
+import { IDescription } from './description.interface';
+import { DescriptionsFactory } from './descriptions.factory';
 
 const MAIN_CONSUMER = ['ООО "Боголюбовское"'];
 
@@ -77,6 +79,11 @@ class WeeklyStrategy implements IParserStrategy {
   }
 
   parseByBranch(branch: string): Array<IValue> {
+    const descriptionFactory: DescriptionsFactory = new DescriptionsFactory(
+      this.department,
+      branch,
+    );
+
     const result: Array<IValue> = [];
     const startAddress: CellAddress = findCellByValue(this.sh, branch, {
       minRow: this.startRowIndex,
@@ -85,11 +92,15 @@ class WeeklyStrategy implements IParserStrategy {
 
     if (branch === 'Население и приравненные группы потребителей') {
       result.push({
-        key: createKey([this.department, branch, 'before']),
+        description: generateAndUpdateKey(
+          descriptionFactory.getDescriptionForBeforeYear(branch),
+        ),
         value: this.getValueByConsumer(startAddress.r, 'before'),
       });
       result.push({
-        key: createKey([this.department, branch, 'now']),
+        description: generateAndUpdateKey(
+          descriptionFactory.getDescriptionForNowYear(branch),
+        ),
         value: this.getValueByConsumer(startAddress.r, 'now'),
       });
       return result;
@@ -102,17 +113,24 @@ class WeeklyStrategy implements IParserStrategy {
       const nextCell: CellObject = this.sh[
         utils.encode_cell({ r: offset, c: column })
       ];
+
       if (this.isEndBranch(nextCell)) {
         break;
       }
+
       result.push({
-        key: createKey([this.department, branch, <string>nextCell.v, 'before']),
+        description: generateAndUpdateKey(
+          descriptionFactory.getDescriptionForBeforeYear(<string>nextCell.v),
+        ),
         value: this.getValueByConsumer(offset, 'before'),
       });
       result.push({
-        key: createKey([this.department, branch, <string>nextCell.v, 'now']),
+        description: generateAndUpdateKey(
+          descriptionFactory.getDescriptionForNowYear(<string>nextCell.v),
+        ),
         value: this.getValueByConsumer(offset, 'now'),
       });
+
       offset++;
     }
     return result;
