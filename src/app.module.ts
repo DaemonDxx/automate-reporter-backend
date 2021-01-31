@@ -3,7 +3,6 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { FilesModule } from './files/files.module';
 import { ParserModule } from './parser/parser.module';
-import { MongoModule } from './mongo/mongo.module';
 import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({

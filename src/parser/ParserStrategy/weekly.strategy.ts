@@ -5,6 +5,7 @@ import generateAndUpdateKey from '../Utils/hash.function';
 import { findCellByValue } from '../Utils/xlsx.utils.functions';
 import { IDescription } from './description.interface';
 import { DescriptionsFactory } from './descriptions.factory';
+import { IResultParsing } from '../resultParsing.interface';
 
 const MAIN_CONSUMER = ['ООО "Боголюбовское"'];
 
@@ -67,7 +68,7 @@ class WeeklyStrategy implements IParserStrategy {
 
   sh: WorkSheet;
 
-  parse(sh: WorkSheet): string {
+  parse(sh: WorkSheet): IResultParsing {
     let result: Array<IValue> = [];
     this.sh = sh;
     this.findUndUpdateColumn();
@@ -75,10 +76,13 @@ class WeeklyStrategy implements IParserStrategy {
     BRANCHES.forEach((item) => {
       result = result.concat(this.parseByBranch(item));
     });
-    return '';
+    return {
+      department: this.department,
+      data: result,
+    };
   }
 
-  parseByBranch(branch: string): Array<IValue> {
+  private parseByBranch(branch: string): Array<IValue> {
     const descriptionFactory: DescriptionsFactory = new DescriptionsFactory(
       this.department,
       branch,
