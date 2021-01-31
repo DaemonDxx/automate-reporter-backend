@@ -1,7 +1,8 @@
 import { IParserStrategy } from './parserStrategy.interface';
 import { WorkSheet, CellAddress, CellObject, utils } from 'xlsx';
 import IValue from './value.interface';
-import createKey from "../Utils/hash.function";
+import createKey from '../Utils/hash.function';
+import { findCellByValue } from '../Utils/xlsx.utils.functions';
 
 const MAIN_CONSUMER = ['ООО "Боголюбовское"'];
 
@@ -77,12 +78,10 @@ class WeeklyStrategy implements IParserStrategy {
 
   parseByBranch(branch: string): Array<IValue> {
     const result: Array<IValue> = [];
-    const startAddress: CellAddress = this.findCellByValue(
-      branch,
-      this.startRowIndex,
-      this.column_consumer,
-    );
-
+    const startAddress: CellAddress = findCellByValue(this.sh, branch, {
+      minRow: this.startRowIndex,
+      column: this.column_consumer,
+    });
 
     if (branch === 'Население и приравненные группы потребителей') {
       result.push({
@@ -95,7 +94,6 @@ class WeeklyStrategy implements IParserStrategy {
       });
       return result;
     }
-
 
     let offset: number = startAddress.r + 1;
     const column: number = startAddress.c;
@@ -113,7 +111,7 @@ class WeeklyStrategy implements IParserStrategy {
       });
       result.push({
         key: createKey([this.department, branch, <string>nextCell.v, 'now']),
-        value: this.getValueByConsumer(offset, 'now')
+        value: this.getValueByConsumer(offset, 'now'),
       });
       offset++;
     }
@@ -137,7 +135,7 @@ class WeeklyStrategy implements IParserStrategy {
     return isEnd;
   }
 
-  private getValueByConsumer(r: number, year:string, type:string = 'recoil'): number {
+  private getValueByConsumer(r: number, year: string, type = 'recoil'): number {
     let column;
 
     if (year === 'before') {
@@ -177,101 +175,60 @@ class WeeklyStrategy implements IParserStrategy {
   }
 
   private updateColumnRecoil(): void {
-    const adrr: CellAddress = this.findCellByValue(QUERY_PARAMS.RECOIL);
+    const adrr: CellAddress = findCellByValue(this.sh, QUERY_PARAMS.RECOIL);
     this.column_recoil_before_year = adrr.c;
     this.column_recoil_now_year = adrr.c + 1;
     console.log(`Отпуск из сети: ${utils.encode_cell(adrr)}`);
   }
 
   private updateColumnReception(): void {
-    const adrr: CellAddress = this.findCellByValue(QUERY_PARAMS.RECEPTION);
+    const adrr: CellAddress = findCellByValue(this.sh, QUERY_PARAMS.RECEPTION);
     this.column_reception_before_year = adrr.c;
     this.column_reception_now_year = adrr.c + 1;
     console.log(`Отпуск в сеть: ${utils.encode_cell(adrr)}`);
   }
 
   private updateColumnConsumer(): void {
-    const adrr: CellAddress = this.findCellByValue(QUERY_PARAMS.CONSUMER);
+    const adrr: CellAddress = findCellByValue(this.sh, QUERY_PARAMS.CONSUMER);
     this.column_consumer = adrr.c;
     console.log(`Потребители: ${utils.encode_cell(adrr)}`);
   }
 
   private updateStartRowIndex(): void {
-    let i: number = 1;
-    while (i < 2000) {
-      const nextCellAddress: string = utils.encode_cell({
-        r: i,
-        c: this.column_consumer,
+    let i = 1;
+
+    while (true) {
+      const address: CellAddress = findCellByValue(this.sh, 'Всего', {
+        minRow: i,
+        column: this.column_consumer,
       });
-      const cell: CellObject = this.sh[nextCellAddress];
-      if (!cell) {
-        i++;
-        continue;
+
+      const cell: CellObject = this.getCell({
+        r: address.r,
+        c: this.column_reception_before_year,
+      });
+
+      if (!cell.f) {
+        this.startRowIndex = address.r;
+        break;
+      } else {
+        i = address.r + 1;
       }
-      if (!cell.v) {
-        i++;
-        continue;
-      }
-      if (cell.v === 'Всего') {
-        if (
-          !this.sh[
-            utils.encode_cell({ r: i, c: this.column_reception_before_year })
-          ].f
-        ) {
-          this.startRowIndex = i;
-        }
-      }
-      i++;
     }
   }
 
   private findAndDefineDepartment(): string {
     for (let i = this.startRowIndex; i < this.startRowIndex + 100; i++) {
-      const nextCell: CellObject = this.sh[
-        utils.encode_cell({ r: i, c: this.column_consumer })
-      ];
-      if (!nextCell.v) {
-        continue;
-      } else {
-        if (MAIN_CONSUMER.includes(<string>nextCell.v)) {
-          return match(<string>nextCell.v);
-        }
+      const nextCell: CellObject = this.getCell({
+        r: i,
+        c: this.column_consumer,
+      });
+      if (!nextCell.v) continue;
+
+      if (MAIN_CONSUMER.includes(<string>nextCell.v)) {
+        return match(<string>nextCell.v);
       }
     }
-  }
-
-  findCellInColumn(
-    value: string | number,
-    column: number,
-    startRow: number,
-  ): CellAddress {
-    return { c: 0, r: 0 };
-  }
-
-  findCellByValue(value: string | number, minRow?: number, consumerColumn?: number): CellAddress {
-    let cell: CellObject;
-    for (const item in this.sh) {
-      if (item[0] !== '!') {
-        cell = <CellObject>this.sh[item];
-        if (cell.v === value) {
-          const address: CellAddress = utils.decode_cell(item);
-          if (minRow) {
-            if (address.r > minRow && address.c === consumerColumn) {
-              return address;
-            }
-          } else {
-            return address;
-          }
-        }
-      } else {
-        continue;
-      }
-    }
-    return { r: 0, c: 0 };
-  }
-
-  findNameDepartmentByConsumer(consumerName: string): string {
-    return '';
   }
 }
 
