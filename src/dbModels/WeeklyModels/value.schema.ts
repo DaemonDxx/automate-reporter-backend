@@ -3,15 +3,16 @@ import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Report } from './report.schema';
 import { Description } from './description.schema';
+import { ParsedFile } from './file.schema';
 
 @Schema()
 export class Value extends Document {
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Report',
+    ref: 'ParsedFile',
   })
-  report: Report;
+  fromFile: ParsedFile;
 
   @Prop({
     required: true,

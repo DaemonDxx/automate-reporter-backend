@@ -2,22 +2,21 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as mongoose from 'mongoose';
 import { Report } from './report.schema';
+import { ParsedFile } from './file.schema';
 
 @Schema()
-export class ErrorOfReport extends Document {
-
+export class ErrorOfFile extends Document {
   @Prop({
     required: true,
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Report'
+    ref: 'ParsedFile',
   })
-  report: Report;
+  fromFile: ParsedFile;
 
   @Prop({
-    required: true
+    required: true,
   })
-  description: string
-
+  description: string;
 }
 
-export const ErrorSchema = SchemaFactory.createForClass(ErrorOfReport);
+export const ErrorSchema = SchemaFactory.createForClass(ErrorOfFile);

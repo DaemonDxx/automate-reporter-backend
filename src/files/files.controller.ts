@@ -1,4 +1,10 @@
-import { Controller, Get, Post, UploadedFile, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { FilesService } from './files.service';
 import { ParserService } from '../parser/parser.service';
 import { IResultParsing } from '../parser/resultParsing.interface';
@@ -26,7 +32,8 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('file', {
       dest: 'uploads/',
-  }))
+    }),
+  )
   async uploadFiles(@UploadedFile() file) {
     console.log(file);
   }

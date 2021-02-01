@@ -1,5 +1,7 @@
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import * as mongoose from 'mongoose';
+import { ParsedFile } from './file.schema';
 
 @Schema()
 export class Report extends Document {
@@ -28,16 +30,19 @@ export class Report extends Document {
   day: number;
 
   @Prop({
-    required: true,
+    type: [
+      {
+        type: 'File',
+        ref: 'File',
+      },
+    ],
   })
-  version: number;
+  files: ParsedFile[];
 
   @Prop({
-    default: () => {
-      return new Date();
-    },
+    default: 'Отчет без описания',
   })
-  dateAt: Date;
+  description: string;
 }
 
 export const ReportSchema = SchemaFactory.createForClass(Report);
