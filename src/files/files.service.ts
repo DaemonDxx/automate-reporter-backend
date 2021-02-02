@@ -9,7 +9,6 @@ import { Value } from '../dbModels/WeeklyModels/value.schema';
 import { ParserService } from '../parser/parser.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { ErrorOfFile } from '../dbModels/WeeklyModels/error.schema';
 import { Description } from '../dbModels/WeeklyModels/description.schema';
 import { IDescription } from '../parser/ParserStrategy/description.interface';
 import { CheckerService } from '../checker/checker.service';
@@ -18,11 +17,9 @@ import { CheckerService } from '../checker/checker.service';
 export class FilesService {
   constructor(
     private readonly parserService: ParserService,
-    private readonly fileService: FilesService,
     private readonly checker: CheckerService,
     @InjectModel('Report') private Report: Model<Report>,
     @InjectModel('Value') private Value: Model<Value>,
-    @InjectModel('ErrorOfReport') private ErrorOfReport: Model<ErrorOfFile>,
     @InjectModel('Description') private Description: Model<Description>,
     @InjectModel('ParsedFile') private ParsedFile: Model<ParsedFile>,
   ) {}
@@ -43,7 +40,10 @@ export class FilesService {
       file: buffer,
       type: 'weekly',
     });
-    let file: ParsedFile = await this.saveParsedFile(report, result.department);
+    const file: ParsedFile = await this.saveParsedFile(
+      report,
+      result.department,
+    );
     const values: Array<Value> = await this.saveValues(result, file);
     const errors: Array<string> = await this.checker.checkFile(
       report.type,

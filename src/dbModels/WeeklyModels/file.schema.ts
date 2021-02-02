@@ -2,7 +2,6 @@ import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 import { Report } from './report.schema';
-import { ErrorOfFile } from './error.schema';
 
 @Schema()
 export class ParsedFile extends Document {
