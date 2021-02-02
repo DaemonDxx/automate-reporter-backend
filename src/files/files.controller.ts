@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Get,
   Post,
@@ -10,8 +11,10 @@ import { ParserService } from '../parser/parser.service';
 import { IResultParsing } from '../parser/resultParsing.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
 import path from 'path';
+import { ParseFileDto } from '../DTO/parseFile.dto';
+import { ParsedFile } from '../dbModels/WeeklyModels/file.schema';
 
-@Controller('files')
+@Controller('file')
 export class FilesController {
   constructor(
     private readonly filesService: FilesService,
@@ -28,6 +31,7 @@ export class FilesController {
     return str;
   }
 
+  //Todo: Сделать модуль Storage для хранения и выдачи файлов
   @Post('/upload')
   @UseInterceptors(
     FileInterceptor('file', {
@@ -36,5 +40,10 @@ export class FilesController {
   )
   async uploadFiles(@UploadedFile() file) {
     console.log(file);
+  }
+
+  @Post()
+  async createFile(@Body() parseFileOption: ParseFileDto): Promise<ParsedFile> {
+    const result = await this.filesService.parseFile(parseFileOption);
   }
 }

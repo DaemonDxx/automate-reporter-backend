@@ -26,87 +26,9 @@ export class AppService {
     @InjectModel('ParsedFile') private ParsedFile: Model<ParsedFile>,
   ) {}
 
-  getHello(): string {
-    return 'Hello World!';
-  }
-
-  async parseFile(parseFileOption: ParseFileDto): Promise<Report> {
-    const report = await this.Report.findById(parseFileOption.id_report);
-    const buffer: Buffer = await this.fileService.getBufferOfFile(
-      parseFileOption.filename,
-    );
-    const result: IResultParsing = this.parserService.parse({
-      file: buffer,
-      type: 'weekly',
-    });
-    const file: ParsedFile = await this.createFile(report, result.department);
-    const values: Array<Value> = await this.saveValues(result, file);
-  }
-
-  private async createFile(
-    report: Report,
-    department: string,
-  ): Promise<ParsedFile> {
-    const parsedFile = new this.ParsedFile();
-    parsedFile.department = department;
-    parsedFile.report = report;
-    parsedFile.version = await this.getNextVersionFile(report, department);
-    return parsedFile.save();
-  }
-
-  private async getNextVersionFile(
-    report: Report,
-    department: string,
-  ): Promise<number> {
-    const files: Array<ParsedFile> = await this.ParsedFile.find({
-      report,
-      department,
-    });
-    if (!files) {
-      return 1;
-    } else {
-      return files[0].version + 1;
-    }
-  }
-
   private async createReport(reportDto: CreateReportDto): Promise<Report> {
     const report = new this.Report(reportDto);
     return report.save();
-  }
-
-  private async saveValues(
-    parsedResult: IResultParsing,
-    fromFile: ParsedFile,
-  ): Promise<Array<Value>> {
-    const savedValues: Array<Value> = [];
-    for (const item of parsedResult.data) {
-      const description: Description = await this.findOrCreateDescription(
-        item.description,
-      );
-      const value: Value = await new this.Value({
-        fromFile,
-        description,
-        v: item.value,
-      }).save();
-      savedValues.push(value);
-    }
-    return savedValues;
-  }
-
-  private async findOrCreateDescription(
-    description: IDescription,
-  ): Promise<Description> {
-    const findResult: Description = await this.Description.findOne({
-      key: description.key,
-    });
-    if (findResult) {
-      return findResult;
-    } else {
-      const newDescription: Description = await new this.Description(
-        description,
-      );
-      return newDescription;
-    }
   }
 
   private async updateFilesInReport(

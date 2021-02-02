@@ -7,11 +7,16 @@ import { ParsedFile } from './file.schema';
 export class Report extends Document {
   @Prop({
     required: true,
+  })
+  type: string;
+
+  @Prop({
+    required: true,
     default: () => {
       return new Date().getFullYear();
     },
   })
-  yeah: number;
+  year: number;
 
   @Prop({
     required: true,
@@ -32,8 +37,8 @@ export class Report extends Document {
   @Prop({
     type: [
       {
-        type: 'File',
-        ref: 'File',
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'ParsedFile',
       },
     ],
   })
