@@ -5,12 +5,12 @@ import { ReportService } from './report.service';
 
 @Controller('report')
 export class ReportController {
-
-  constructor(private readonly reportService: ReportService) {
-  }
+  constructor(private readonly reportService: ReportService) {}
 
   @Post()
-  async createReport(@Body() createReportDTO: CreateReportDto): Promise<Report> {
+  async createReport(
+    @Body() createReportDTO: CreateReportDto,
+  ): Promise<Report> {
     return await this.reportService.createReport(createReportDTO);
   }
 
@@ -23,6 +23,4 @@ export class ReportController {
   async updateReport(@Body() report: Report): Promise<Report> {
     return await this.updateReport(report);
   }
-
-
 }

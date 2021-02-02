@@ -7,9 +7,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ReportSchema } from './dbModels/WeeklyModels/report.schema';
 import { DescriptionSchema } from './dbModels/WeeklyModels/description.schema';
 import { ValueSchema } from './dbModels/WeeklyModels/value.schema';
-import { ErrorSchema } from './dbModels/WeeklyModels/error.schema';
 import { CheckerModule } from './checker/checker.module';
 import { ReportModule } from './report/report.module';
+import {
+  ParsedFile,
+  ParsedFileSchema,
+} from './dbModels/WeeklyModels/file.schema';
 
 @Module({
   imports: [
@@ -30,8 +33,8 @@ import { ReportModule } from './report/report.module';
         schema: ValueSchema,
       },
       {
-        name: 'ErrorOfReport',
-        schema: ErrorSchema,
+        name: 'ParsedFile',
+        schema: ParsedFileSchema,
       },
     ]),
     CheckerModule,

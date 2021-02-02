@@ -7,7 +7,6 @@ import { CreateReportDto } from '../DTO/createReport.dto';
 
 @Injectable()
 export class ReportService {
-
   constructor(
     @InjectModel('Report') private Report: Model<Report>,
     @InjectModel('ParsedFile') private ParsedFile: Model<ParsedFile>,
@@ -25,5 +24,4 @@ export class ReportService {
   async getReport(_idReport: string): Promise<Report> {
     return this.Report.findById(_idReport);
   }
-
 }
