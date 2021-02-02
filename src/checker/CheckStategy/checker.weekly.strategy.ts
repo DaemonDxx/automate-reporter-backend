@@ -28,7 +28,7 @@ export class CheckerWeeklyStrategy implements ICheckerStrategy {
     const beforeValues: Array<Value> = await this.getSortValuesByFile(
       beforeFile,
     );
-    for (const i = 0; i < nowValues.length; i++) {
+    for (let i = 0; i < nowValues.length; i++) {
       if (this.isHasErrorInValue(nowValues[i].v, beforeValues[i].v)) {
         errors.push(this.createErrorDescription(nowValues[i]));
       }

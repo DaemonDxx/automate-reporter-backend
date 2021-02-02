@@ -8,9 +8,7 @@ import {
 } from '@nestjs/common';
 import { FilesService } from './files.service';
 import { ParserService } from '../parser/parser.service';
-import { IResultParsing } from '../parser/resultParsing.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
-import path from 'path';
 import { ParseFileDto } from '../DTO/parseFile.dto';
 import { ParsedFile } from '../dbModels/WeeklyModels/file.schema';
 
@@ -20,16 +18,6 @@ export class FilesController {
     private readonly filesService: FilesService,
     private readonly parserService: ParserService,
   ) {}
-
-  @Get('test')
-  async testMethod(): Promise<IResultParsing> {
-    const buffer: Buffer = await this.filesService.getBufferOfFile('3.xlsx');
-    const str: IResultParsing = this.parserService.parse({
-      type: 'test',
-      file: buffer,
-    });
-    return str;
-  }
 
   //Todo: Сделать модуль Storage для хранения и выдачи файлов
   @Post('/upload')
@@ -44,6 +32,7 @@ export class FilesController {
 
   @Post()
   async createFile(@Body() parseFileOption: ParseFileDto): Promise<ParsedFile> {
-    const result = await this.filesService.parseFile(parseFileOption);
+    const file = await this.filesService.parseFile(parseFileOption);
+    return file;
   }
 }

@@ -12,12 +12,14 @@ import { Model } from 'mongoose';
 import { ErrorOfFile } from '../dbModels/WeeklyModels/error.schema';
 import { Description } from '../dbModels/WeeklyModels/description.schema';
 import { IDescription } from '../parser/ParserStrategy/description.interface';
+import { CheckerService } from '../checker/checker.service';
 
 @Injectable()
 export class FilesService {
   constructor(
     private readonly parserService: ParserService,
     private readonly fileService: FilesService,
+    private readonly checker: CheckerService,
     @InjectModel('Report') private Report: Model<Report>,
     @InjectModel('Value') private Value: Model<Value>,
     @InjectModel('ErrorOfReport') private ErrorOfReport: Model<ErrorOfFile>,
@@ -25,7 +27,7 @@ export class FilesService {
     @InjectModel('ParsedFile') private ParsedFile: Model<ParsedFile>,
   ) {}
 
-  async getBufferOfFile(filename: string): Promise<Buffer> {
+  private async getBufferOfFile(filename: string): Promise<Buffer> {
     try {
       const buffer: Buffer = fs.readFileSync(join('./', filename));
       return buffer;
@@ -34,20 +36,26 @@ export class FilesService {
     }
   }
 
-  async parseFile(parseFileOption: ParseFileDto): Promise<Report> {
+  async parseFile(parseFileOption: ParseFileDto): Promise<ParsedFile> {
     const report = await this.Report.findById(parseFileOption.id_report);
-    const buffer: Buffer = await this.fileService.getBufferOfFile(
+    const buffer: Buffer = await this.getBufferOfFile(
       parseFileOption.filename,
     );
     const result: IResultParsing = this.parserService.parse({
       file: buffer,
       type: 'weekly',
     });
-    const file: ParsedFile = await this.saveParsedFile(
+    let file: ParsedFile = await this.saveParsedFile(
       report,
       result.department,
     );
     const values: Array<Value> = await this.saveValues(result, file);
+    const errors: Array<string> = await this.checker.checkFile(
+      report.type,
+      file,
+    );
+    file.valueErrors = errors;
+    return await file.save();
   }
 
   private async saveParsedFile(

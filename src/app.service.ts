@@ -31,17 +31,6 @@ export class AppService {
     return report.save();
   }
 
-  private async updateFilesInReport(
-    report: Report,
-    file: ParsedFile,
-  ): Promise<Report> {}
-
-  private async checkErrors(file: ParsedFile): Promise<Array<string>> {
-    const currentValues: Array<Value> = await this.Value.find({
-      fromFile: file,
-    }).populate('Description');
-  }
-
   private checkNegativeValue(values: Array<Value>): Array<string> {
     const errors: Array<string> = [];
     values.forEach((item) => {

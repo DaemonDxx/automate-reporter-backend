@@ -9,6 +9,7 @@ import { DescriptionSchema } from './dbModels/WeeklyModels/description.schema';
 import { ValueSchema } from './dbModels/WeeklyModels/value.schema';
 import { ErrorSchema } from './dbModels/WeeklyModels/error.schema';
 import { CheckerModule } from './checker/checker.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { CheckerModule } from './checker/checker.module';
       },
     ]),
     CheckerModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -8,7 +8,7 @@ import { TYPES_REPORT } from '../Utils/typesReport.constant';
 export class CheckerService {
   constructor(private readonly weeklyStrategy: CheckerWeeklyStrategy) {}
 
-  getStrategy(type: string): ICheckerStrategy {
+  private getStrategy(type: string): ICheckerStrategy {
     switch (type) {
       case TYPES_REPORT.WEEKLY:
         return this.weeklyStrategy;
