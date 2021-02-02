@@ -5,7 +5,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Value } from '../../dbModels/WeeklyModels/value.schema';
 import { Description } from '../../dbModels/WeeklyModels/description.schema';
-import { IDescription } from '../../parser/ParserStrategy/description.interface';
 import { Report } from '../../dbModels/WeeklyModels/report.schema';
 
 @Injectable({
