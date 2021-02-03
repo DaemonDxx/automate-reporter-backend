@@ -14,7 +14,7 @@ export class ReportController {
     return await this.reportService.createReport(createReportDTO);
   }
 
-  @Get(':id')
+  @Get()
   async getReport(@Query('id') _idReport: string): Promise<Report> {
     return await this.reportService.getReport(_idReport);
   }

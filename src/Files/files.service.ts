@@ -3,15 +3,15 @@ import * as fs from 'fs';
 import { join } from 'path';
 import { ParseFileDto } from '../DTO/parseFile.dto';
 import { Report } from '../dbModels/WeeklyModels/report.schema';
-import { IResultParsing } from '../parser/resultParsing.interface';
+import { IResultParsing } from '../Parser/resultParsing.interface';
 import { ParsedFile } from '../dbModels/WeeklyModels/file.schema';
 import { Value } from '../dbModels/WeeklyModels/value.schema';
-import { ParserService } from '../parser/parser.service';
+import { ParserService } from '../Parser/parser.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Description } from '../dbModels/WeeklyModels/description.schema';
-import { IDescription } from '../parser/ParserStrategy/description.interface';
-import { CheckerService } from '../checker/checker.service';
+import { IDescription } from '../Parser/ParserStrategy/description.interface';
+import { CheckerService } from '../Checker/checker.service';
 
 @Injectable()
 export class FilesService {

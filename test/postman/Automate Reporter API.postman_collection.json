@@ -1,0 +1,288 @@
+{
+	"info": {
+		"_postman_id": "3da5f410-5b99-4839-9600-38912d996a96",
+		"name": "Automate Reporter API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Создание и получение Report",
+			"item": [
+				{
+					"name": "Создание нового Report",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var profile = pm.response.json();\r",
+									"pm.environment.set('_idReport', profile._id);\r",
+									"pm.environment.set('new_report', pm.response.text());\r",
+									"pm.test('Должен вернуть статус 201 и ответ в формате json', function() {\r",
+									"    pm.response.to.have.status(201);\r",
+									"    pm.response.json;\r",
+									"})\r",
+									"\r",
+									"var schemaReport = {\r",
+									"    type: 'object',\r",
+									"    required: ['description','files', 'type', 'year', 'month', 'day', '_id'],\r",
+									"    properies: {\r",
+									"        description: {type: 'string'},\r",
+									"        'files': {'type': 'Array'},\r",
+									"        'type': {'type': 'string'},\r",
+									"        'year': {'type': 'integer'},\r",
+									"        'month': {'type': 'integer'},\r",
+									"        'day': {'type': 'integer'}\r",
+									"    }\r",
+									"}\r",
+									"\r",
+									"pm.test('Проверка схемы ответа', function() {\r",
+									"    let isValidScheme = tv4.validate(profile, schemaReport);\r",
+									"    pm.expect(isValidScheme).to.be.true;\r",
+									"});\r",
+									"\r",
+									"console.log()"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "type",
+									"value": "WEEKLY",
+									"type": "text"
+								},
+								{
+									"key": "year",
+									"value": "2021",
+									"type": "text"
+								},
+								{
+									"key": "month",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "day",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Еженедельный отчет с 1 - 30 февраля",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}:{{PORT_SERVER}}/report",
+							"host": [
+								"{{URL}}"
+							],
+							"port": "{{PORT_SERVER}}",
+							"path": [
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Создания нового Report без Type",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Должен вернуть статус badRequest', function() {\r",
+									"    pm.response.to.be.badRequest;\r",
+									"    pm.response.json;\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "type",
+									"value": "WEEKLY",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "year",
+									"value": "2021",
+									"type": "text"
+								},
+								{
+									"key": "month",
+									"value": "2",
+									"type": "text"
+								},
+								{
+									"key": "day",
+									"value": "1",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Еженедельный отчет с 1 - 30 февраля",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}:{{PORT_SERVER}}/report",
+							"host": [
+								"{{URL}}"
+							],
+							"port": "{{PORT_SERVER}}",
+							"path": [
+								"report"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Получить Report по id",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('Должен вернуть статус ok', function() {\r",
+									"    pm.response.to.be.ok;\r",
+									"});\r",
+									"\r",
+									"pm.test('Тело ответа должно быть равным объекту, созданому в прошлом запросе', function() {\r",
+									"    let createdReport = JSON.parse(pm.environment.get('new_report'));\r",
+									"    console.log(createdReport);\r",
+									"    console.log(pm.response.json())\r",
+									"    pm.expect(pm.response.json()).to.eql(createdReport);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{URL}}:{{PORT_SERVER}}/report?id={{_idReport}}",
+							"host": [
+								"{{URL}}"
+							],
+							"port": "{{PORT_SERVER}}",
+							"path": [
+								"report"
+							],
+							"query": [
+								{
+									"key": "id",
+									"value": "{{_idReport}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Загрузка файла",
+			"item": [
+				{
+					"name": "Загрузка файла на сервер",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/C:/Users/Iurii/Downloads/Сибирь.xlsx"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{URL}}:{{PORT_SERVER}}/file/upload",
+							"host": [
+								"{{URL}}"
+							],
+							"port": "{{PORT_SERVER}}",
+							"path": [
+								"file",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "localhost"
+		},
+		{
+			"key": "PORT_SERVER",
+			"value": "3000"
+		}
+	]
+}

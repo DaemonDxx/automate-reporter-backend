@@ -7,10 +7,11 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FilesService } from './files.service';
-import { ParserService } from '../parser/parser.service';
+import { ParserService } from '../Parser/parser.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ParseFileDto } from '../DTO/parseFile.dto';
 import { ParsedFile } from '../dbModels/WeeklyModels/file.schema';
+import { diskStorage } from 'multer';
 
 @Controller('file')
 export class FilesController {
@@ -23,7 +24,22 @@ export class FilesController {
   @Post('/upload')
   @UseInterceptors(
     FileInterceptor('file', {
-      dest: 'uploads/',
+      fileFilter: (req, file, callback) => {
+        if (
+          file.mimetype ===
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ) {
+          callback(null, true);
+        } else {
+          callback(new Error('Данный тип файла не поддерживается'), false);
+        }
+      },
+      storage: diskStorage({
+        destination: 'uploads',
+        filename: (req, file, callback) => {
+          callback(null, `${new Date().getMilliseconds()}.xlsx`);
+        },
+      }),
     }),
   )
   async uploadFiles(@UploadedFile() file) {

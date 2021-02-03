@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { FilesModule } from './files/files.module';
+import { FilesModule } from './Files/files.module';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { ReportModule } from './report/report.module';
+import { ReportModule } from './Report/report.module';
 
 @Module({
   imports: [
