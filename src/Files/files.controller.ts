@@ -26,27 +26,31 @@ export class FilesController {
   @UseInterceptors(
     FileInterceptor('file', {
       fileFilter: (req, file, callback) => {
-        if (
+        const res =
           file.mimetype ===
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        ) {
-          callback(null, true);
-        } else {
-          callback(null, false);
-        }
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+        callback(null, res);
       },
       storage: diskStorage({
         destination: 'uploads',
-        FILENAME: (req, file, callback) => {
-          callback(null, `${new Date().getMilliseconds()}.xlsx`);
+        filename: (req, file, callback) => {
+          const date = new Date();
+          callback(
+            null,
+            `${date.getFullYear()}.${
+              date.getMonth() + 1
+            }.${date.getDay()}-${Math.random()}.xlsx`,
+          );
         },
       }),
     }),
   )
   async uploadFiles(@UploadedFile() file) {
-    if (!file) throw new BadRequestException({message: 'Данный тип файла не поддерживается'});
-    return {}
-    console.log(file);
+    if (!file)
+      throw new BadRequestException({
+        message: 'Данный тип файла не поддерживается',
+      });
+    return { filename: file.filename };
   }
 
   @Post()

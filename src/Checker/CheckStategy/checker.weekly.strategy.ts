@@ -23,6 +23,9 @@ export class CheckerWeeklyStrategy implements ICheckerStrategy {
   async check(file: ParsedFile): Promise<Array<string>> {
     const errors: Array<string> = [];
     const beforeFile: ParsedFile = await this.findBeforeFile(file);
+    if (!beforeFile) {
+      return [];
+    }
     const nowValues: Array<Value> = await this.getSortValuesByFile(file);
     const beforeValues: Array<Value> = await this.getSortValuesByFile(
       beforeFile,

@@ -32,6 +32,11 @@ export class ParsedFile extends Document {
     default: [],
   })
   valueErrors: Array<string>;
+
+  @Prop({
+    required: true,
+  })
+  filename: string;
 }
 
 export const ParsedFileSchema = SchemaFactory.createForClass(ParsedFile);

@@ -26,7 +26,8 @@ export class FilesService {
 
   private async getBufferOfFile(filename: string): Promise<Buffer> {
     try {
-      const buffer: Buffer = fs.readFileSync(join('./', filename));
+      //TODO: Разобраться с путями (лучше вынести в конфиг)
+      const buffer: Buffer = fs.readFileSync(join('C:\\Users\\Iurii\\Documents\\GitHub\\automate-reporter-backend\\uploads', filename));
       return buffer;
     } catch (e) {
       throw new Error(e);
@@ -35,14 +36,15 @@ export class FilesService {
 
   async parseFile(parseFileOption: ParseFileDto): Promise<ParsedFile> {
     const report = await this.Report.findById(parseFileOption.id_report);
-    const buffer: Buffer = await this.getBufferOfFile(parseFileOption.FILENAME);
+    const buffer: Buffer = await this.getBufferOfFile(parseFileOption.filename);
     const result: IResultParsing = this.parserService.parse({
       file: buffer,
-      type: 'weekly',
+      type: report.type,
     });
     const file: ParsedFile = await this.saveParsedFile(
       report,
       result.department,
+      parseFileOption.filename,
     );
     const values: Array<Value> = await this.saveValues(result, file);
     const errors: Array<string> = await this.checker.checkFile(
@@ -56,11 +58,13 @@ export class FilesService {
   private async saveParsedFile(
     report: Report,
     department: string,
+    filename: string
   ): Promise<ParsedFile> {
     const parsedFile = new this.ParsedFile();
     parsedFile.department = department;
     parsedFile.report = report;
     parsedFile.version = await this.getNextVersionFile(report, department);
+    parsedFile.filename = filename;
     return parsedFile.save();
   }
 
@@ -72,7 +76,7 @@ export class FilesService {
       report,
       department,
     });
-    if (!files) {
+    if (files.length === 0) {
       return 1;
     } else {
       return files[0].version + 1;
@@ -110,7 +114,7 @@ export class FilesService {
       const newDescription: Description = await new this.Description(
         description,
       );
-      return newDescription;
+      return newDescription.save();
     }
   }
 }
