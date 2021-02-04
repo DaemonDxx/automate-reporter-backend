@@ -1,24 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { ParsingData } from './parsingData.interface';
 import { IParserStrategy } from './ParserStrategy/parserStrategy.interface';
-import { WeeklyStrategy } from './ParserStrategy/weekly.strategy';
+import { WeeklyStrategy } from './ParserStrategy/Weekly/weekly.strategy';
 import { WorkSheet, WorkBook, read } from 'xlsx';
 import * as XLSX from 'xlsx';
 import { IResultParsing } from './resultParsing.interface';
+import { StrategyFactory } from './strategy.factory';
 
 @Injectable()
 export class ParserService {
-  ParserStrategy: IParserStrategy;
+  strategyFactory: StrategyFactory;
 
   constructor() {
-    this.ParserStrategy = new WeeklyStrategy();
+    this.strategyFactory = new StrategyFactory();
   }
 
   parse(data: ParsingData): IResultParsing {
     const wb: WorkBook = this.readBook(data.file);
     const indexActiveSheet: number = this.getActiveSheetIndex(wb);
     const activeSheet: WorkSheet = wb.Sheets[wb.SheetNames[indexActiveSheet]];
-    return this.ParserStrategy.parse(activeSheet);
+    return this.strategyFactory.getStrategy(data.type).parse(activeSheet);
   }
 
   private readBook(buffer: Buffer): WorkBook {

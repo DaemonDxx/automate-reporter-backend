@@ -1,18 +1,61 @@
-import { IParserStrategy } from './parserStrategy.interface';
+import { IParserStrategy } from '../parserStrategy.interface';
 import { WorkSheet, CellAddress, CellObject, utils } from 'xlsx';
-import IValue from './value.interface';
-import generateAndUpdateKey from '../Utils/hash.function';
-import { findCellByValue } from '../Utils/xlsx.utils.functions';
-import { IDescription } from './description.interface';
-import { DescriptionsFactory } from './descriptions.factory';
-import { IResultParsing } from '../resultParsing.interface';
+import IValue from '../value.interface';
+import generateAndUpdateKey from '../../Utils/hash.function';
+import { findCellByValue } from '../../Utils/xlsx.utils.functions';
+import { IDescription } from '../description.interface';
+import { DescriptionsFactory } from '../descriptions.factory';
+import { IResultParsing } from '../../resultParsing.interface';
 
-const MAIN_CONSUMER = ['ООО "Боголюбовское"'];
+const MAIN_CONSUMER = [
+  'ООО "Боголюбовское"',
+  'ООО Шахта Грамотеинская',
+  'АО "Газпромнефть-ОНПЗ"',
+  'прочие потребители (с ДСППУ)ООО "РУДНИК ВЕСЕЛЫЙ"',
+  'ОАО "Территориальная генерирующая компания № 14" (Тимлюйская ТЭЦ)',
+  'АО "Научно-производственная корпорация " Уралвагонзавод"',
+  'ООО "Металлэнергофинанс"',
+  'ЗАО КАРАТ - ЦМ (ВН)',
+  'ЗАО "Золоторудная компания "Омчак"',
+];
 
 const CONSUMER_FOR_DEPARTMENT_ASSOCIATION = [
   {
     department: 'Красноярскэнерго',
     consumer: 'ООО "Боголюбовское"',
+  },
+  {
+    department: 'Кузбассэнерго-РЭС',
+    consumer: 'ООО Шахта Грамотеинская',
+  },
+  {
+    department: 'Омскэнерго',
+    consumer: 'АО "Газпромнефть-ОНПЗ"',
+  },
+  {
+    department: 'ГАЭС',
+    consumer: 'прочие потребители (с ДСППУ)ООО "РУДНИК ВЕСЕЛЫЙ"',
+  },
+  {
+    department: 'Бурятэнерго',
+    consumer:
+      'ОАО "Территориальная генерирующая компания № 14" (Тимлюйская ТЭЦ)',
+  },
+  {
+    department: 'Алтайэнерго',
+    consumer: 'АО "Научно-производственная корпорация " Уралвагонзавод"',
+  },
+  {
+    department: 'АО "Тываэнерго"',
+    consumer: 'ООО "Металлэнергофинанс"',
+  },
+  {
+    department: 'Хакасэнерго',
+    consumer: 'ЗАО КАРАТ - ЦМ (ВН)',
+  },
+  {
+    department: 'Читаэнерго',
+    consumer: 'ЗАО "Золоторудная компания "Омчак"',
   },
 ];
 
@@ -59,8 +102,8 @@ class WeeklyStrategy implements IParserStrategy {
   //Столбец Наименование отрасли/потребителя
   column_consumer: number;
 
-  maxRow: number = 1000;
-  maxCol: number = 30;
+  maxRow = 1000;
+  maxCol = 30;
 
   department: string;
 
@@ -76,10 +119,36 @@ class WeeklyStrategy implements IParserStrategy {
     BRANCHES.forEach((item) => {
       result = result.concat(this.parseByBranch(item));
     });
+    result = result.concat(this.parseAllField());
     return {
       department: this.department,
       data: result,
     };
+  }
+
+  private parseAllField(): Array<IValue> {
+    const result: Array<IValue> = [];
+    result.push({
+      description: generateAndUpdateKey({
+        year: 'before',
+        branch: 'all',
+        consumer: 'all',
+        department: this.department,
+        key: '',
+      }),
+      value: this.getValueByConsumer(this.startRowIndex, 'before', 'reception'),
+    });
+    result.push({
+      description: generateAndUpdateKey({
+        year: 'now',
+        branch: 'all',
+        consumer: 'all',
+        department: this.department,
+        key: '',
+      }),
+      value: this.getValueByConsumer(this.startRowIndex, 'now', 'reception'),
+    });
+    return result;
   }
 
   private parseByBranch(branch: string): Array<IValue> {
@@ -200,20 +269,17 @@ class WeeklyStrategy implements IParserStrategy {
     const adrr: CellAddress = findCellByValue(this.sh, QUERY_PARAMS.RECOIL);
     this.column_recoil_before_year = adrr.c;
     this.column_recoil_now_year = adrr.c + 1;
-    console.log(`Отпуск из сети: ${utils.encode_cell(adrr)}`);
   }
 
   private updateColumnReception(): void {
     const adrr: CellAddress = findCellByValue(this.sh, QUERY_PARAMS.RECEPTION);
     this.column_reception_before_year = adrr.c;
     this.column_reception_now_year = adrr.c + 1;
-    console.log(`Отпуск в сеть: ${utils.encode_cell(adrr)}`);
   }
 
   private updateColumnConsumer(): void {
     const adrr: CellAddress = findCellByValue(this.sh, QUERY_PARAMS.CONSUMER);
     this.column_consumer = adrr.c;
-    console.log(`Потребители: ${utils.encode_cell(adrr)}`);
   }
 
   private updateStartRowIndex(): void {

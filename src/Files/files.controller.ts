@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
@@ -31,18 +32,20 @@ export class FilesController {
         ) {
           callback(null, true);
         } else {
-          callback(new Error('Данный тип файла не поддерживается'), false);
+          callback(null, false);
         }
       },
       storage: diskStorage({
         destination: 'uploads',
-        filename: (req, file, callback) => {
+        FILENAME: (req, file, callback) => {
           callback(null, `${new Date().getMilliseconds()}.xlsx`);
         },
       }),
     }),
   )
   async uploadFiles(@UploadedFile() file) {
+    if (!file) throw new BadRequestException({message: 'Данный тип файла не поддерживается'});
+    return {}
     console.log(file);
   }
 

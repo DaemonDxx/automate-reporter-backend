@@ -35,7 +35,7 @@ export class FilesService {
 
   async parseFile(parseFileOption: ParseFileDto): Promise<ParsedFile> {
     const report = await this.Report.findById(parseFileOption.id_report);
-    const buffer: Buffer = await this.getBufferOfFile(parseFileOption.filename);
+    const buffer: Buffer = await this.getBufferOfFile(parseFileOption.FILENAME);
     const result: IResultParsing = this.parserService.parse({
       file: buffer,
       type: 'weekly',
