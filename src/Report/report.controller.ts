@@ -1,7 +1,9 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { Report } from '../dbModels/WeeklyModels/report.schema';
 import { CreateReportDto } from '../DTO/createReport.dto';
 import { ReportService } from './report.service';
+import { IGetReportQuery } from './get.query.interface';
+import { GetReportValidationPipe } from './validation.pipes';
 
 @Controller('report')
 export class ReportController {
@@ -14,13 +16,19 @@ export class ReportController {
     return await this.reportService.createReport(createReportDTO);
   }
 
-  @Get()
-  async getReport(@Query('id') _idReport: string): Promise<Report> {
+  @Get(':id')
+  async getReport(@Param('id') _idReport: string): Promise<Report> {
     return await this.reportService.getReport(_idReport);
   }
 
   @Put()
   async updateReport(@Body() report: Report): Promise<Report> {
     return await this.updateReport(report);
+  }
+
+  @Get()
+  @UsePipes(new GetReportValidationPipe())
+  async getReportByQuery(@Query() query: IGetReportQuery): Promise<Array<Report>> {
+    return this.reportService.getReportsByQuery(query);
   }
 }
