@@ -151,4 +151,12 @@ export class FilesService {
       );
     }
   }
+
+  async updateStatusFile(fileID: string): Promise<ParsedFile> {
+    const parsedFile: ParsedFile = await this.ParsedFile.findById(fileID);
+    const report: Report = await this.Report.findById(parsedFile.report);
+    await this.unActiveFileByDepartment(report, parsedFile.department);
+    parsedFile.isActive = true;
+    return parsedFile.save();
+  }
 }
