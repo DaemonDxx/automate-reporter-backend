@@ -15,7 +15,15 @@ export class ReportService {
   }
 
   async updateReport(report: Report): Promise<Report> {
-    return this.Report.findByIdAndUpdate(report.id, report);
+    const { _id, ...query } = report;
+    const updatedReport = await this.Report.findOneAndUpdate(
+      { _id: _id },
+      query,
+      {
+        new: true,
+      },
+    );
+    return updatedReport;
   }
 
   async getReport(_idReport: string): Promise<Report> {
@@ -32,6 +40,6 @@ export class ReportService {
     })
       .limit(limit)
       .skip(offset)
-      .sort({ day: 1 });
+      .sort({ dateAt: -1 });
   }
 }

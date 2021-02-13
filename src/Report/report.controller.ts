@@ -23,12 +23,14 @@ export class ReportController {
 
   @Put()
   async updateReport(@Body() report: Report): Promise<Report> {
-    return await this.updateReport(report);
+    return await this.reportService.updateReport(report);
   }
 
   @Get()
   @UsePipes(new GetReportValidationPipe())
-  async getReportByQuery(@Query() query: IGetReportQuery): Promise<Array<Report>> {
+  async getReportByQuery(
+    @Query() query: IGetReportQuery,
+  ): Promise<Array<Report>> {
     return this.reportService.getReportsByQuery(query);
   }
 }

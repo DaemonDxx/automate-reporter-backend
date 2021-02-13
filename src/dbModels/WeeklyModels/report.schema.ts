@@ -35,19 +35,15 @@ export class Report extends Document {
   day: number;
 
   @Prop({
-    type: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'ParsedFile',
-      },
-    ],
-  })
-  files: ParsedFile[];
-
-  @Prop({
     default: 'Отчет без описания',
   })
   description: string;
+
+  @Prop({
+    default: new Date(),
+  })
+  dateAt: Date;
 }
+
 
 export const ReportSchema = SchemaFactory.createForClass(Report);

@@ -24,6 +24,11 @@ export class FilesService {
     @InjectModel('ParsedFile') private ParsedFile: Model<ParsedFile>,
   ) {}
 
+  async getFilesByReport(reportID: string): Promise<ParsedFile[]> {
+    const report = await this.Report.findById(reportID);
+    return this.ParsedFile.find({ report: report });
+  }
+
   private async getBufferOfFile(filename: string): Promise<Buffer> {
     try {
       //TODO: Разобраться с путями (лучше вынести в конфиг)

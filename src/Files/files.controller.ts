@@ -2,8 +2,8 @@ import {
   BadRequestException,
   Body,
   Controller,
-  Get,
-  Post,
+  Get, Param,
+  Post, Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -57,5 +57,10 @@ export class FilesController {
   async createFile(@Body() parseFileOption: ParseFileDto): Promise<ParsedFile> {
     const file = await this.filesService.parseFile(parseFileOption);
     return file;
+  }
+
+  @Get()
+  async getFilesByReport(@Query('report') reportID: string): Promise<ParsedFile[]> {
+    return this.filesService.getFilesByReport(reportID);
   }
 }
