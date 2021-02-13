@@ -53,15 +53,16 @@ export class CheckerWeeklyStrategy implements ICheckerStrategy {
       type: file.report.type,
     }).populate('files');
     if (reports.length === 1) {
-      return undefined;
+      return null;
     } else {
       reports.sort((a, b) => {
         return a.day - b.day;
       });
-      const findFiles: Array<ParsedFile> = reports[1].files.filter((item) => {
-        return item.department === file.department;
+      const file = await this.ParsedFile.find({
+        report: reports[1],
+        isActive: true,
       });
-      return findFiles[0];
+      return file.length > 0 ? file[0]: null;
     }
   }
 

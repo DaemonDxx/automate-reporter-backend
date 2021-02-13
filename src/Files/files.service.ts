@@ -32,7 +32,12 @@ export class FilesService {
   private async getBufferOfFile(filename: string): Promise<Buffer> {
     try {
       //TODO: Разобраться с путями (лучше вынести в конфиг)
-      const buffer: Buffer = fs.readFileSync(join('C:\\Users\\Iurii\\Documents\\GitHub\\automate-reporter-backend\\uploads', filename));
+      const buffer: Buffer = fs.readFileSync(
+        join(
+          'C:\\Users\\Iurii\\Documents\\GitHub\\automate-reporter-backend\\uploads',
+          filename,
+        ),
+      );
       return buffer;
     } catch (e) {
       throw new Error(e);
@@ -46,6 +51,7 @@ export class FilesService {
       file: buffer,
       type: report.type,
     });
+    await this.unActiveFileByDepartment(report, result.department);
     const file: ParsedFile = await this.saveParsedFile(
       report,
       result.department,
@@ -63,7 +69,7 @@ export class FilesService {
   private async saveParsedFile(
     report: Report,
     department: string,
-    filename: string
+    filename: string,
   ): Promise<ParsedFile> {
     const parsedFile = new this.ParsedFile();
     parsedFile.department = department;
@@ -80,7 +86,9 @@ export class FilesService {
     const files: Array<ParsedFile> = await this.ParsedFile.find({
       report,
       department,
-    });
+    })
+      .sort({ version: -1 })
+      .limit(1);
     if (files.length === 0) {
       return 1;
     } else {
@@ -120,6 +128,27 @@ export class FilesService {
         description,
       );
       return newDescription.save();
+    }
+  }
+
+  private async unActiveFileByDepartment(
+    report: Report,
+    department: string,
+  ): Promise<void> {
+    const activeFile = await this.ParsedFile.find({
+      report,
+      department,
+      isActive: true,
+    });
+    if (activeFile.length > 0) {
+      await this.ParsedFile.findOneAndUpdate(
+        {
+          _id: activeFile[0]._id,
+        },
+        {
+          isActive: false,
+        },
+      );
     }
   }
 }

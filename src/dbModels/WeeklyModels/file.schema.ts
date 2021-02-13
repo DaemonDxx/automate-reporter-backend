@@ -42,7 +42,7 @@ export class ParsedFile extends Document {
     required: true,
     default: true,
   })
-  active: boolean;
+  isActive: boolean;
 }
 
 export const ParsedFileSchema = SchemaFactory.createForClass(ParsedFile);
