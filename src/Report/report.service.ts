@@ -42,4 +42,10 @@ export class ReportService {
       .skip(offset)
       .sort({ dateAt: -1 });
   }
+
+  async deleteReportByID(reportID: string) {
+    return this.Report.deleteOne({
+      _id: reportID,
+    });
+  }
 }

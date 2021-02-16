@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
 import { Report } from '../dbModels/WeeklyModels/report.schema';
 import { CreateReportDto } from '../DTO/createReport.dto';
 import { ReportService } from './report.service';
@@ -32,5 +32,11 @@ export class ReportController {
     @Query() query: IGetReportQuery,
   ): Promise<Array<Report>> {
     return this.reportService.getReportsByQuery(query);
+  }
+
+  @Delete()
+  async deleteReport(@Body('reportID') reportID: string): Promise<null> {
+    await this.reportService.deleteReportByID(reportID);
+    return null;
   }
 }
