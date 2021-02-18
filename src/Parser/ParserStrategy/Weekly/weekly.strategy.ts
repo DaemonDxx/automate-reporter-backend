@@ -1,11 +1,9 @@
 import { IParserStrategy } from '../parserStrategy.interface';
 import { WorkSheet, CellAddress, CellObject, utils } from 'xlsx';
-import IValue from '../value.interface';
-import generateAndUpdateKey from '../../Utils/hash.function';
 import { findCellByValue } from '../../Utils/xlsx.utils.functions';
-import { IDescription } from '../description.interface';
-import { DescriptionsFactory } from '../descriptions.factory';
 import { IResultParsing } from '../../resultParsing.interface';
+import { DescriptorWeekly } from '../../../Utils/Descriptor/descriptor.weekly';
+import { IValue } from '../../../dbModels/Interfaces/value.interface';
 
 const MAIN_CONSUMER = [
   'ООО "Боголюбовское"',
@@ -105,7 +103,7 @@ class WeeklyStrategy implements IParserStrategy {
   maxRow = 1000;
   maxCol = 30;
 
-  department: string;
+  descriptor: DescriptorWeekly;
 
   startRowIndex: number;
 
@@ -115,48 +113,51 @@ class WeeklyStrategy implements IParserStrategy {
     let result: Array<IValue> = [];
     this.sh = sh;
     this.findUndUpdateColumn();
-    this.department = this.findAndDefineDepartment();
+    this.descriptor = new DescriptorWeekly();
+    this.descriptor.department = this.findAndDefineDepartment();
     BRANCHES.forEach((item) => {
+      this.descriptor.branch = item;
       result = result.concat(this.parseByBranch(item));
     });
+    this.descriptor.branch = 'all';
+    this.descriptor.consumer = 'all';
     result = result.concat(this.parseAllField());
     return {
-      department: this.department,
+      department: this.descriptor.department,
       data: result,
     };
   }
 
+  private findAndDefineDepartment(): string {
+    for (let i = this.startRowIndex; i < this.startRowIndex + 100; i++) {
+      const nextCell: CellObject = this.getCell({
+        r: i,
+        c: this.column_consumer,
+      });
+      if (!nextCell.v) continue;
+
+      if (MAIN_CONSUMER.includes(<string>nextCell.v)) {
+        return match(<string>nextCell.v);
+      }
+    }
+  }
+
   private parseAllField(): Array<IValue> {
+    this.descriptor.setYearBefore();
     const result: Array<IValue> = [];
     result.push({
-      description: generateAndUpdateKey({
-        year: 'before',
-        branch: 'all',
-        consumer: 'all',
-        department: this.department,
-        key: '',
-      }),
-      value: this.getValueByConsumer(this.startRowIndex, 'before', 'reception'),
+      description: this.descriptor.getDescription(),
+      v: this.getValueByConsumer(this.startRowIndex, 'before', 'reception'),
     });
+    this.descriptor.setYearNow();
     result.push({
-      description: generateAndUpdateKey({
-        year: 'now',
-        branch: 'all',
-        consumer: 'all',
-        department: this.department,
-        key: '',
-      }),
-      value: this.getValueByConsumer(this.startRowIndex, 'now', 'reception'),
+      description: this.descriptor.getDescription(),
+      v: this.getValueByConsumer(this.startRowIndex, 'now', 'reception'),
     });
     return result;
   }
 
   private parseByBranch(branch: string): Array<IValue> {
-    const descriptionFactory: DescriptionsFactory = new DescriptionsFactory(
-      this.department,
-      branch,
-    );
-
     const result: Array<IValue> = [];
     const startAddress: CellAddress = findCellByValue(this.sh, branch, {
       minRow: this.startRowIndex,
@@ -164,17 +165,16 @@ class WeeklyStrategy implements IParserStrategy {
     });
 
     if (branch === 'Население и приравненные группы потребителей') {
+      this.descriptor.consumer = branch;
+      this.descriptor.setYearBefore();
       result.push({
-        description: generateAndUpdateKey(
-          descriptionFactory.getDescriptionForBeforeYear(branch),
-        ),
-        value: this.getValueByConsumer(startAddress.r, 'before'),
+        description: this.descriptor.getDescription(),
+        v: this.getValueByConsumer(startAddress.r, 'before'),
       });
+      this.descriptor.setYearNow();
       result.push({
-        description: generateAndUpdateKey(
-          descriptionFactory.getDescriptionForNowYear(branch),
-        ),
-        value: this.getValueByConsumer(startAddress.r, 'now'),
+        description: this.descriptor.getDescription(),
+        v: this.getValueByConsumer(startAddress.r, 'now'),
       });
       return result;
     }
@@ -190,20 +190,17 @@ class WeeklyStrategy implements IParserStrategy {
       if (this.isEndBranch(nextCell)) {
         break;
       }
-
+      this.descriptor.consumer = <string>nextCell.v;
+      this.descriptor.setYearBefore();
       result.push({
-        description: generateAndUpdateKey(
-          descriptionFactory.getDescriptionForBeforeYear(<string>nextCell.v),
-        ),
-        value: this.getValueByConsumer(offset, 'before'),
+        description: this.descriptor.getDescription(),
+        v: this.getValueByConsumer(offset, 'before'),
       });
+      this.descriptor.setYearNow();
       result.push({
-        description: generateAndUpdateKey(
-          descriptionFactory.getDescriptionForNowYear(<string>nextCell.v),
-        ),
-        value: this.getValueByConsumer(offset, 'now'),
+        description: this.descriptor.getDescription(),
+        v: this.getValueByConsumer(offset, 'now'),
       });
-
       offset++;
     }
     return result;
@@ -301,20 +298,6 @@ class WeeklyStrategy implements IParserStrategy {
         break;
       } else {
         i = address.r + 1;
-      }
-    }
-  }
-
-  private findAndDefineDepartment(): string {
-    for (let i = this.startRowIndex; i < this.startRowIndex + 100; i++) {
-      const nextCell: CellObject = this.getCell({
-        r: i,
-        c: this.column_consumer,
-      });
-      if (!nextCell.v) continue;
-
-      if (MAIN_CONSUMER.includes(<string>nextCell.v)) {
-        return match(<string>nextCell.v);
       }
     }
   }

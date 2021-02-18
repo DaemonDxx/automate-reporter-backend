@@ -9,9 +9,9 @@ import { Value } from '../dbModels/WeeklyModels/value.schema';
 import { ParserService } from '../Parser/parser.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Description } from '../dbModels/WeeklyModels/description.schema';
-import { IDescription } from '../Parser/ParserStrategy/description.interface';
+import { Description} from '../dbModels/WeeklyModels/description.schema';
 import { CheckerService } from '../Checker/checker.service';
+import { IDescription } from '../dbModels/Interfaces/description.interface';
 
 @Injectable()
 export class FilesService {
@@ -105,12 +105,11 @@ export class FilesService {
       const description: Description = await this.findOrCreateDescription(
         item.description,
       );
-      const value: Value = await new this.Value({
-        fromFile,
-        description,
-        v: item.value,
-      }).save();
-      savedValues.push(value);
+      const value: Value = new this.Value();
+      value.v = item.v;
+      value.fromFile = fromFile;
+      value.description = description;
+      savedValues.push(await value.save());
     }
     return savedValues;
   }
@@ -124,10 +123,7 @@ export class FilesService {
     if (findResult) {
       return findResult;
     } else {
-      const newDescription: Description = await new this.Description(
-        description,
-      );
-      return newDescription.save();
+      return new this.Description(description).save();
     }
   }
 

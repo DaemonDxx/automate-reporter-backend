@@ -1,4 +1,4 @@
-import IValue from './ParserStrategy/value.interface';
+import { IValue } from '../dbModels/Interfaces/value.interface';
 
 export interface IResultParsing {
   department: string;

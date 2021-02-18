@@ -29,7 +29,7 @@ const META_OF_DEPARTMENT = {
     DATA_LENGTH: 172,
     SUM_ALL_VALUES: 5748.836,
     FILENAME: 'КбЭ.xlsx',
-},
+  },
   Омскэнерго: {
     DATA_LENGTH: 86,
     SUM_ALL_VALUES: 3233.943,
@@ -45,7 +45,7 @@ const META_OF_DEPARTMENT = {
     SUM_ALL_VALUES: 273.934,
     FILENAME: 'ТЭ.xlsx',
   },
-}
+};
 
 describe('Тестирование парсера для еженедльного отчета', () => {
   let parser: ParserService;
@@ -57,7 +57,6 @@ describe('Тестирование парсера для еженедльног�
   }
 
   departments.forEach((department) => {
-
     describe(`Парсинг файла от ${department}`, () => {
       let result: IResultParsing;
 
@@ -94,14 +93,12 @@ describe('Тестирование парсера для еженедльног�
         const sum: number = parseFloat(
           result.data
             .reduce((before, current) => {
-              return before + current.value;
+              return before + current.v;
             }, 0)
             .toFixed(3),
         );
         expect(sum).toBe(META_OF_DEPARTMENT[department].SUM_ALL_VALUES);
       });
-
     });
-
   });
 });

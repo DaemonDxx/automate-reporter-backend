@@ -1,6 +1,6 @@
 import { IDescription } from './description.interface';
 
-export default interface IValue {
-  value: number;
+export interface IValue {
   description: IDescription;
+  v: number;
 }

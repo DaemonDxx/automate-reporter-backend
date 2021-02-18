@@ -11,7 +11,7 @@ export class Description extends Document {
   @Prop({
     required: true,
   })
-  metadata: string;
+  meta: string;
 
   @Prop({
     required: true,

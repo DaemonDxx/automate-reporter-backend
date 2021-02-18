@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { ParsingData } from './parsingData.interface';
-import { IParserStrategy } from './ParserStrategy/parserStrategy.interface';
-import { WeeklyStrategy } from './ParserStrategy/Weekly/weekly.strategy';
 import { WorkSheet, WorkBook, read } from 'xlsx';
 import * as XLSX from 'xlsx';
 import { IResultParsing } from './resultParsing.interface';
