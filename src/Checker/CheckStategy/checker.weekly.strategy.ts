@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import { Value } from '../../dbModels/WeeklyModels/value.schema';
 import { Description } from '../../dbModels/WeeklyModels/description.schema';
 import { Report } from '../../dbModels/WeeklyModels/report.schema';
+import { DescriptorWeekly } from '../../Utils/Descriptor/descriptor.weekly';
 
 @Injectable({
   scope: Scope.REQUEST,
@@ -43,7 +44,9 @@ export class CheckerWeeklyStrategy implements ICheckerStrategy {
   }
 
   private createErrorDescription(value: Value): string {
-    return `${value.description.department} - ${value.description.branch} - ${value.description.consumer} - ${value.description.year}: (${value.v}) ${this.ERROR_DESCRIPTION}`;
+    const descriptor: DescriptorWeekly = new DescriptorWeekly();
+    descriptor.setDBModel(value.description);
+    return `${descriptor.getMetadata()}: (${value.v}) ${this.ERROR_DESCRIPTION}`;
   }
 
   private async findBeforeFile(file: ParsedFile): Promise<ParsedFile> {

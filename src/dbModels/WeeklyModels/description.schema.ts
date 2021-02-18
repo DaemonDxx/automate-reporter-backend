@@ -6,21 +6,12 @@ export class Description extends Document {
   @Prop({
     required: true,
   })
-  department: string;
+  forType: string;
 
   @Prop({
     required: true,
   })
-  branch: string;
-
-  @Prop()
-  consumer: string;
-
-  @Prop({
-    required: true,
-    enum: ['now', 'before'],
-  })
-  year: string;
+  metadata: string;
 
   @Prop({
     required: true,
