@@ -29,7 +29,7 @@ export class FilesService {
     return this.ParsedFile.find({ report: report });
   }
 
-  private async getBufferOfFile(filename: string): Promise<Buffer> {
+  async getBufferOfFile(filename: string): Promise<Buffer> {
     try {
       //TODO: Разобраться с путями (лучше вынести в конфиг)
       const buffer: Buffer = fs.readFileSync(

@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { TemplaterService } from './templater.service';
+import { CreateMapDto } from './DTO/createMap.dto';
 
 @Controller('templater')
 export class TemplaterController {
@@ -15,8 +16,8 @@ export class TemplaterController {
   // }
 
   @Post('/map')
-  async mapFile(@Body('filename') filename: string) {
-    await this.templaterService.mapFile(filename);
+  async mapFile(@Body() createMapDto: CreateMapDto) {
+    await this.templaterService.mapFile(createMapDto);
   }
 
 }

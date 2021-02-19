@@ -3,6 +3,7 @@ import * as xlsx from 'xlsx';
 import { DescriptorWeekly } from '../../../Utils/Descriptor/descriptor.weekly';
 import { Cell, ValueType, Workbook, Worksheet } from 'exceljs';
 import * as fs from 'fs';
+import * as buffer from 'buffer';
 
 const BRANCHES = [
   'Промышленные потребители',
@@ -35,8 +36,6 @@ export class MainFullMapper implements IMapper {
 
   private row_start = 19;
 
-  private currentBrunch;
-
   private maxSteps = 600;
 
   private currentSheet: Worksheet;
@@ -48,8 +47,7 @@ export class MainFullMapper implements IMapper {
   }
 
   async mapTemplateByFile(file: Buffer): Promise<Buffer> {
-    const wb: Workbook = new Workbook();
-    await wb.xlsx.load(file);
+    const wb: Workbook = await this.getWorkBookFromBuffer(file);
     this.currentSheet = wb.getWorksheet('Текущий');
 
     for (let i = this.row_start; i < this.maxSteps; i++) {
@@ -66,10 +64,12 @@ export class MainFullMapper implements IMapper {
         this.mapConsumerField(i, value);
       }
     }
-    const buff = await wb.xlsx.writeBuffer();
-    fs.writeFileSync('tesd1.xlsx', <Buffer>buff);
+    return this.getBufferOfNewWorkbook(wb);
+  }
 
-    return undefined;
+  private async getWorkBookFromBuffer(file: Buffer): Promise<Workbook> {
+    const wb: Workbook = new Workbook();
+    return await wb.xlsx.load(file);
   }
 
   private setCurrentBranch(branch: string) {
@@ -105,4 +105,8 @@ export class MainFullMapper implements IMapper {
     cell.value = key;
   }
 
+  private async getBufferOfNewWorkbook(wb: Workbook): Promise<Buffer> {
+    const buffer = await wb.xlsx.writeBuffer();
+    return <Buffer>buffer;
+  }
 }

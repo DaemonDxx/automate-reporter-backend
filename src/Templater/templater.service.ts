@@ -1,26 +1,23 @@
 import { Injectable } from '@nestjs/common';
 import { IMapper } from './Mapper/mapper.interface';
 import { MainFullMapper } from './Mapper/Weekly/main.full.mapper';
-import * as buffer from 'buffer';
+import { CreateMapDto } from './DTO/createMap.dto';
+import { FilesService } from '../Files/files.service';
 import * as fs from 'fs';
-import { join } from 'path';
 
 @Injectable()
 export class TemplaterService {
+  constructor(private readonly storageService: FilesService) {}
 
   // async generateFiles(reportID: string): Promise<BinaryType> {
   //
   // }
 
-  async mapFile(filename: string) {
+  async mapFile(createMapDto: CreateMapDto) {
     const mapper: IMapper = new MainFullMapper();
-    const file: Buffer = fs.readFileSync(
-      join(
-        'C:\\Users\\Iurii\\Documents\\GitHub\\automate-reporter-backend\\uploads',
-        filename,
-      ),
+    const file: Buffer = await this.storageService.getBufferOfFile(
+      createMapDto.filename,
     );
-    mapper.mapTemplateByFile(file);
+    const map: Buffer = await mapper.mapTemplateByFile(file);
   }
-
 }
