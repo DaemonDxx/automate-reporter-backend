@@ -2,12 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { IMapper } from './Mapper/mapper.interface';
 import { MainFullMapper } from './Mapper/Weekly/main.full.mapper';
 import { CreateMapDto } from './DTO/createMap.dto';
-import { FilesService } from '../Files/files.service';
-import * as fs from 'fs';
+import { StorageService } from '../Storage/storage.service';
 
 @Injectable()
 export class TemplaterService {
-  constructor(private readonly storageService: FilesService) {}
+  constructor(private readonly storageService: StorageService) {}
 
   // async generateFiles(reportID: string): Promise<BinaryType> {
   //
@@ -19,5 +18,10 @@ export class TemplaterService {
       createMapDto.filename,
     );
     const map: Buffer = await mapper.mapTemplateByFile(file);
+    const result = await this.storageService.saveFile(
+      'full.xlsx',
+      map,
+      'map_files',
+    );
   }
 }

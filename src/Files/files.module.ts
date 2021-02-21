@@ -36,5 +36,6 @@ import * as multer from 'multer';
   ],
   providers: [FilesService],
   controllers: [FilesController],
+  exports: [FilesService],
 })
 export class FilesModule {}

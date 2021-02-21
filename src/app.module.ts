@@ -6,6 +6,8 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { ReportModule } from './Report/report.module';
 import { TemplaterModule } from './Templater/templater.module';
+import { StorageModule } from './Storage/storage.module';
+import { TemperatureModule } from './Temperature/temperature.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { TemplaterModule } from './Templater/templater.module';
     MongooseModule.forRoot('mongodb://127.0.0.1:27017'),
     ReportModule,
     TemplaterModule,
+    StorageModule,
+    TemperatureModule,
   ],
   controllers: [AppController],
   providers: [AppService],
