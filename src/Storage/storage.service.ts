@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { dirname, join } from 'path';
-import fs from 'fs';
+import * as fs from 'fs';
 
 @Injectable()
 export class StorageService {
