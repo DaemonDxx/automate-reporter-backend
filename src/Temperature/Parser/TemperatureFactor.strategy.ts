@@ -2,19 +2,9 @@ import { CellAddress, WorkSheet, Range, CellObject, utils } from 'xlsx';
 import { TValue } from '../Models/TValue.interface';
 import { ParseOptions } from './parse.options';
 import { TYPES_VALUE } from '../typesValue.enum';
+import { DEPARTMENTS } from '../departments.constant';
 
 export class TemperatureFactorStrategy {
-  private DEPARTMENTS = [
-    '"Алтайэнерго"',
-    '"Бурятэнерго"',
-    '"ГАЭС"',
-    '"Красноярскэнерго"',
-    '"Кузбассэнерго-РЭС"',
-    '"Омскэнерго"',
-    '"Хакасэнерго"',
-    '"Читаэнерго"',
-    'АО "Тываэнерго"',
-  ];
 
   private MONTHS = [
     'Январь',
@@ -50,7 +40,7 @@ export class TemperatureFactorStrategy {
     const result: TValue[] = [];
     for (const month of this.MONTHS) {
       const rangeMonth: Range = this.findRangeWithMonth(month);
-      for (const department of this.DEPARTMENTS) {
+      for (const department of DEPARTMENTS) {
         const rowDepartment: number = this.findRowByDepartment(
           department,
           rangeMonth.s.r,
@@ -86,7 +76,7 @@ export class TemperatureFactorStrategy {
   }
 
   private calculateConstant(options: ParseOptions) {
-    this.WIDTH_OFFSET_IN_MONTH = (options.yearEnd - options.yearStart + 1)*2;
+    this.WIDTH_OFFSET_IN_MONTH = (options.yearEnd - options.yearStart + 1) * 2;
   }
 
   private findRangeWithMonth(month: string): Range {

@@ -12,4 +12,14 @@ export class TemperatureController {
   ): Promise<ParsedStatistic> {
     return this.temperatureService.parseFromFile(parseDTO);
   }
+
+  @Post('/coefficient/file')
+  async parseCoefficientFromFile(@Body('filename') filename: string): Promise<string[]> {
+    const result: Map<string,number> = await this.temperatureService.parseCoefficientFromFile(filename);
+    const arr: string[] = [];
+    for (const [key, value] of result.entries()) {
+      arr.push(`${key}: ${value}`);
+    }
+    return arr;
+  }
 }
