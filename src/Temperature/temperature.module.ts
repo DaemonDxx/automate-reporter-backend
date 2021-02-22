@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ForTemperatureValueSchema } from './Models/forTemperature.value';
 import { StorageModule } from '../Storage/storage.module';
 import { CoefficientSchema } from './Models/coefficient';
+import { MathService } from './math.service';
 
 @Module({
   imports: [
@@ -15,6 +16,6 @@ import { CoefficientSchema } from './Models/coefficient';
     StorageModule,
   ],
   controllers: [TemperatureController],
-  providers: [TemperatureService],
+  providers: [TemperatureService, MathService],
 })
 export class TemperatureModule {}

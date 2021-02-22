@@ -69,7 +69,7 @@ export class TemperatureService {
     };
   }
 
-  async parseCoefficientFromFile(filename): Promise<Map<string,number>> {
+  async parseCoefficientFromFile(filename): Promise<Map<string, number>> {
     const file: WorkSheet = await this.getWorkSheet(filename, 'Table 1');
     const parser: CoefficientStrategy = new CoefficientStrategy(file);
     const result: ICoefficient[] = parser.parse();
