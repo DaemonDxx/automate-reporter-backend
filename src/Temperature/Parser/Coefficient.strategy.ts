@@ -35,7 +35,7 @@ export class CoefficientStrategy {
                   r: rowDepartment + this.OFFSET_ROW_COEFFICIENT,
                   c,
                 })
-              ].v,
+              ].v.replace(',', '.'),
             ),
             minTemp: this.sh[
               utils.encode_cell({
