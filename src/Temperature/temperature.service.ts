@@ -10,6 +10,8 @@ import { TValue } from './Models/TValue.interface';
 import { CoefficientStrategy } from './Parser/Coefficient.strategy';
 import { ICoefficient } from './Models/coefficient.interface';
 import { Coefficient } from './Models/coefficient';
+import { DEPARTMENTS } from './departments.constant';
+import { TYPES_VALUE } from './typesValue.enum';
 
 export interface ParsedStatistic {
   saved: number;
@@ -96,5 +98,18 @@ export class TemperatureService {
       }
     }
     return resultCounter;
+  }
+
+  async getAccessYears(): Promise<number[]> {
+    const setYears: Set<number> = new Set<number>();
+    const values: ForTemperatureValue[] = await this.tValueModel.find({
+      department: DEPARTMENTS[0],
+      month: 0,
+      type: TYPES_VALUE.RECEPTION,
+    });
+    for (const value of values) {
+      setYears.add(value.year);
+    }
+    return Array.from(setYears);
   }
 }

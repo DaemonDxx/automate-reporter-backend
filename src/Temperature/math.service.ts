@@ -5,20 +5,10 @@ import { Coefficient } from './Models/coefficient';
 import { ForTemperatureValue } from './Models/forTemperature.value';
 import { DEPARTMENTS } from './departments.constant';
 import { TYPES_VALUE } from './typesValue.enum';
-import { of } from 'rxjs';
-
-export interface CountResult {
-  department: string;
-  month: number;
-  offset: number;
-  offsetShare: number;
-}
-
-interface DataForAlgorithm {
-  temp: number;
-  reception: number;
-  coefficient: Coefficient;
-}
+import { FullMonthAlgorithm } from './Math/full.month.algorithm';
+import { DataForAlgorithm } from './Math/interfaces/dataForAlgorithm.interface';
+import { Offset } from './Math/interfaces/offset.interface';
+import { CountResult } from './Math/interfaces/countResult.interface';
 
 @Injectable()
 export class MathService {
@@ -35,8 +25,9 @@ export class MathService {
     const values2: ForTemperatureValue[] = await this.TValue.find({
       year: yearCompare2,
     });
-    for (let i = 0; i < this.getQuantityOfMonthForCount(values2); i++) {
-      for (const department of DEPARTMENTS) {
+    for (const department of DEPARTMENTS) {
+      const offsetsOfDepartment: Offset[] = [];
+      for (let i = 0; i < this.getQuantityOfMonthForCount(values2); i++) {
         const data1: DataForAlgorithm = await this.getDataForAlgorithm(
           department,
           yearCompare1,
@@ -47,15 +38,20 @@ export class MathService {
           yearCompare2,
           i,
         );
-        const offset: number = this.countAlgorithm(data1, data2) - data1.reception;
-        const offsetShare: number = (offset * 100) / data2.reception;
-        result.push({
-          department,
+        const offset: number = FullMonthAlgorithm.solve(data1, data2);
+        offsetsOfDepartment.push({
           month: i,
           offset,
-          offsetShare,
+          receptionBefore: data1.reception,
+          receptionNow: data2.reception,
+          tempBefore: data1.temp,
+          tempNow: data2.temp,
         });
       }
+      result.push({
+        department,
+        offsets: offsetsOfDepartment,
+      });
     }
     return result;
   }
@@ -65,68 +61,34 @@ export class MathService {
     year: number,
     month: number,
   ): Promise<DataForAlgorithm> {
-    const temp: ForTemperatureValue = await this.TValue.findOne({
+    const findResult: ForTemperatureValue[] = await this.TValue.find({
       department,
       month,
       year,
-      type: TYPES_VALUE.TEMPERATURE,
     });
-    const reception: ForTemperatureValue = await this.TValue.findOne({
-      department,
-      month,
-      year,
-      type: TYPES_VALUE.RECEPTION,
-    });
+    let temp: number;
+    let reception: number;
+    if (findResult[0].type === TYPES_VALUE.TEMPERATURE) {
+      temp = findResult[0].value;
+      reception = findResult[1].value;
+    } else {
+      temp = findResult[1].value;
+      reception = findResult[0].value;
+    }
     const coef: Coefficient = await this.Coefficient.findOne({
       department,
       maxTemp: {
-        $gte: temp.value,
+        $gte: temp,
       },
       minTemp: {
-        $lt: temp.value,
+        $lt: temp,
       },
     });
     return {
       coefficient: coef,
-      temp: temp.value,
-      reception: reception.value,
+      temp: temp,
+      reception: reception,
     };
-  }
-
-  private countAlgorithm(
-    data1: DataForAlgorithm,
-    data2: DataForAlgorithm,
-  ): number {
-    if (data1.coefficient.tag === data2.coefficient.tag) {
-      return this.formula(
-        data1.coefficient.value,
-        data1.temp,
-        data2.temp,
-        data1.reception,
-      );
-    } else {
-      const temp: number =
-        data1.temp < data2.temp
-          ? data1.coefficient.maxTemp
-          : data1.coefficient.minTemp;
-      let result: number = this.formula(
-        data1.coefficient.value,
-        data1.temp,
-        temp,
-        data1.reception,
-      );
-      result = this.formula(data2.coefficient.value, temp, data2.temp, result);
-      return result;
-    }
-  }
-
-  private formula(
-    coef: number,
-    temp1: number,
-    temp2: number,
-    reception: number,
-  ): number {
-    return reception * (1 + (coef * (temp2 - temp1)) / 100);
   }
 
   private getQuantityOfMonthForCount(values: ForTemperatureValue[]): number {

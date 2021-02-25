@@ -1,7 +1,8 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { ParseFromFileDTO } from './DTO/ParseFromFile.dto';
 import { ParsedStatistic, TemperatureService } from './temperature.service';
-import { CountResult, MathService } from './math.service';
+import { MathService } from './math.service';
+import { CountResult } from './Math/interfaces/countResult.interface';
 
 @Controller('Temperature')
 export class TemperatureController {
@@ -32,7 +33,7 @@ export class TemperatureController {
     return arr;
   }
 
-  @Get('offset')
+  @Get('/offset')
   async getTemperatureOffset(@Query() params): Promise<CountResult[]> {
     const year1 = parseInt(params.year1);
     const year2 = parseInt(params.year2);
@@ -41,5 +42,10 @@ export class TemperatureController {
       year2,
     );
     return result;
+  }
+
+  @Get('/year')
+  async getAccessYears(): Promise<number[]> {
+    return this.temperatureService.getAccessYears();
   }
 }
