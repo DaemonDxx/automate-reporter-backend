@@ -9,10 +9,13 @@ import { TemplaterModule } from './Templater/templater.module';
 import { StorageModule } from './Storage/storage.module';
 import { TemperatureModule } from './Temperature/temperature.module';
 
+
 @Module({
   imports: [
     FilesModule,
-    MongooseModule.forRoot('mongodb://127.0.0.1:27017'),
+    MongooseModule.forRoot(
+      'mongodb://' + (process.env.DB_HOST || '127.0.0.1') + ':27017',
+    ),
     ReportModule,
     TemplaterModule,
     StorageModule,

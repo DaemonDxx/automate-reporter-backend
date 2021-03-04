@@ -34,3 +34,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 /db_test/
 /uploads/
+dist/.default.env

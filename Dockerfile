@@ -1,11 +1,14 @@
 FROM node:14.11.0-alpine
 
-WORKDIR /usr/src/backend
+WORKDIR /usr/app
+
+COPY package*.json ./
+RUN npm install
 
 COPY ./ ./
 
-RUN npm install
+RUN npm run build
 
 EXPOSE 3000
 
-ENTRYPOINT npm run start:dev
+ENTRYPOINT node ./dist/main.js

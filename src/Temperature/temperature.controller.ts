@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ParseFromFileDTO } from './DTO/ParseFromFile.dto';
 import { ParsedStatistic, TemperatureService } from './temperature.service';
 import { MathService } from './math.service';
 import { CountResult } from './Math/interfaces/countResult.interface';
+import { ForTemperatureValue } from './Models/forTemperature.value';
 
 @Controller('Temperature')
 export class TemperatureController {
@@ -48,4 +49,24 @@ export class TemperatureController {
   async getAccessYears(): Promise<number[]> {
     return this.temperatureService.getAccessYears();
   }
+
+  // @Get()
+  // async getValue(
+  //   @Query('year') year: number,
+  //   @Query('month') month: number,
+  // ): Promise<ForTemperatureValue[]> {
+  //
+  // }
+  //
+  // @Post()
+  // async createValueForMonth(@Body() createValuesDTO: CreateValuesDTO): Promise<ForTemperatureValue[]> {
+  //
+  // }
+  //
+  // @Put()
+  // async updateValueForMonth(): Promise<ForTemperatureValue> {
+  //
+  // }
+
+
 }
