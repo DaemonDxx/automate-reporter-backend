@@ -14,12 +14,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ParseFromFileDTO } from './DTO/ParseFromFile.dto';
-import { ParsedStatistic, TemperatureService } from './temperature.service';
+import { SaveValuesStatistic, TemperatureService } from './temperature.service';
 import { MathService } from './math.service';
 import { CountResult } from './Math/interfaces/countResult.interface';
 import { ForTemperatureValue } from './Models/forTemperature.value';
 import { AuthGuard } from '@nestjs/passport';
 import { LoggingInterceptor } from '../Utils/logging.interceptor';
+import { CreateValueDTO } from './DTO/CreateValue.dto';
+import { TValue } from './Models/TValue.interface';
 
 @Controller('Temperature')
 @UseGuards(AuthGuard('jwt'))
@@ -34,7 +36,7 @@ export class TemperatureController {
   @Post('/file')
   async parseValueFromFile(
     @Body() parseDTO: ParseFromFileDTO,
-  ): Promise<ParsedStatistic> {
+  ): Promise<SaveValuesStatistic> {
     try {
       return await this.temperatureService.parseFromFile(parseDTO);
     } catch (e) {
@@ -73,21 +75,29 @@ export class TemperatureController {
     return this.temperatureService.getAccessYears();
   }
 
-  // @Get()
-  // async getValue(
-  //   @Query('year') year: number,
-  //   @Query('month') month: number,
-  // ): Promise<ForTemperatureValue[]> {
-  //
-  // }
-  //
-  // @Post()
-  // async createValueForMonth(@Body() createValuesDTO: CreateValuesDTO): Promise<ForTemperatureValue[]> {
-  //
-  // }
-  //
-  // @Put()
-  // async updateValueForMonth(): Promise<ForTemperatureValue> {
-  //
-  // }
+  @Get()
+  async getValue(
+    @Query('year') year: number,
+    @Query('month') month: number,
+  ): Promise<ForTemperatureValue[]> {
+    const result = await this.temperatureService.getValue(year, month);
+    return result;
+  }
+
+  @Post()
+  async createValue(@Body() value: TValue): Promise<ForTemperatureValue> {
+    const createdValue: ForTemperatureValue = await this.temperatureService.createValue(
+      value,
+      true,
+    );
+    return createdValue;
+  }
+
+  @Put()
+  async updateValueForMonth(
+    @Body() value: TValue,
+  ): Promise<ForTemperatureValue> {
+    const updatedValue: ForTemperatureValue = await this.temperatureService.updateValue(value);
+    return updatedValue;
+  }
 }

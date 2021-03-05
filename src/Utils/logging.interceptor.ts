@@ -26,7 +26,9 @@ export class LoggingInterceptor implements NestInterceptor {
         this.logger.log(out);
       }),
       catchError((err) => {
-        out += `${err.response.statusCode} - ${new Date().getMilliseconds() - start}ms`;
+        out += `${err.response?.statusCode ?? 500} - ${
+          new Date().getMilliseconds() - start
+        }ms`;
         this.logger.warn(out);
         this.logger.error(`Message: ${err.message}`);
         this.logger.error(`Params request: `, req.body);
