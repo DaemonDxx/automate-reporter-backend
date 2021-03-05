@@ -3,9 +3,9 @@ import { TValue } from '../Models/TValue.interface';
 import { ParseOptions } from './parse.options';
 import { TYPES_VALUE } from '../typesValue.enum';
 import { DEPARTMENTS } from '../departments.constant';
+import { ParseFailedError } from '../../Utils/Errors/ParseFailed.error';
 
 export class TemperatureFactorStrategy {
-
   private MONTHS = [
     'Январь',
     'Февраль',
@@ -38,40 +38,48 @@ export class TemperatureFactorStrategy {
   parse(options: ParseOptions): TValue[] {
     this.calculateConstant(options);
     const result: TValue[] = [];
+    const errorsParse: Error[] = [];
     for (const month of this.MONTHS) {
-      const rangeMonth: Range = this.findRangeWithMonth(month);
-      for (const department of DEPARTMENTS) {
-        const rowDepartment: number = this.findRowByDepartment(
-          department,
-          rangeMonth.s.r,
-        );
-        for (let year = options.yearStart; year <= options.yearEnd; year++) {
-          const addressYear: CellAddress = this.findCellWithYear(
-            year,
-            rangeMonth.s.r + 1,
-            rangeMonth.s.c,
+      try {
+        const rangeMonth: Range = this.findRangeWithMonth(month);
+        for (const department of DEPARTMENTS) {
+          const rowDepartment: number = this.findRowByDepartment(
+            department,
+            rangeMonth.s.r,
           );
-          result.push({
-            department: department,
-            month: this.MONTHS.indexOf(month),
-            year: year,
-            type: TYPES_VALUE.RECEPTION,
-            value: this.sh[
-              utils.encode_cell({ r: rowDepartment, c: addressYear.c })
-            ].v,
-          });
-          result.push({
-            department: department,
-            month: this.MONTHS.indexOf(month),
-            year: year,
-            type: TYPES_VALUE.TEMPERATURE,
-            value: this.sh[
-              utils.encode_cell({ r: rowDepartment, c: addressYear.c + 1 })
-            ].v,
-          });
+          for (let year = options.yearStart; year <= options.yearEnd; year++) {
+            const addressYear: CellAddress = this.findCellWithYear(
+              year,
+              rangeMonth.s.r + 1,
+              rangeMonth.s.c,
+            );
+            result.push({
+              department: department,
+              month: this.MONTHS.indexOf(month),
+              year: year,
+              type: TYPES_VALUE.RECEPTION,
+              value:
+                this.sh[
+                  utils.encode_cell({ r: rowDepartment, c: addressYear.c })
+                ].v ?? 0,
+            });
+            result.push({
+              department: department,
+              month: this.MONTHS.indexOf(month),
+              year: year,
+              type: TYPES_VALUE.TEMPERATURE,
+              value:
+                this.sh[
+                  utils.encode_cell({ r: rowDepartment, c: addressYear.c + 1 })
+                ].v ?? 0,
+            });
+          }
         }
+      } catch (e) {
+        errorsParse.push(e);
       }
     }
+    if (errorsParse.length > 0) throw new ParseFailedError(errorsParse);
     return result;
   }
 
@@ -90,6 +98,7 @@ export class TemperatureFactorStrategy {
         c: this.MAX_COLUMN,
       },
     });
+    if (!addressMonth) throw new Error(`В файле отсутствует месяц ${month}`);
     return {
       s: addressMonth,
       e: {
@@ -125,7 +134,7 @@ export class TemperatureFactorStrategy {
     row: number,
     startColumn: number,
   ): CellAddress {
-    return this.findCellInRange(year.toString(), {
+    const cell: CellAddress = this.findCellInRange(year.toString(), {
       s: {
         r: row,
         c: startColumn,
@@ -135,6 +144,9 @@ export class TemperatureFactorStrategy {
         c: startColumn + this.WIDTH_OFFSET_IN_MONTH,
       },
     });
+    if (!cell)
+      throw new Error(`Не найден год ${year} от столбца ${startColumn}`);
+    return cell;
   }
 
   private findCellInRange(query: string, range: Range): CellAddress {
