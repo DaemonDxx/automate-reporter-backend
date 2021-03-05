@@ -3,15 +3,17 @@ import {
   Controller,
   Get,
   Post,
-  UploadedFile,
+  UploadedFile, UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { StorageService } from './storage.service';
 import { dirname, join } from 'path';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('storage')
+@UseGuards(AuthGuard('jwt'))
 export class StorageController {
   constructor(private readonly storageService: StorageService) {}
 

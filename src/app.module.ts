@@ -8,6 +8,8 @@ import { ReportModule } from './Report/report.module';
 import { TemplaterModule } from './Templater/templater.module';
 import { StorageModule } from './Storage/storage.module';
 import { TemperatureModule } from './Temperature/temperature.module';
+import { UserModule } from './User/user.module';
+import { AuthModule } from './Auth/auth.module';
 
 
 @Module({
@@ -20,6 +22,8 @@ import { TemperatureModule } from './Temperature/temperature.module';
     TemplaterModule,
     StorageModule,
     TemperatureModule,
+    UserModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

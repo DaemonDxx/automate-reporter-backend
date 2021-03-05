@@ -1,11 +1,13 @@
-import { Body, Controller, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ParseFromFileDTO } from './DTO/ParseFromFile.dto';
 import { ParsedStatistic, TemperatureService } from './temperature.service';
 import { MathService } from './math.service';
 import { CountResult } from './Math/interfaces/countResult.interface';
 import { ForTemperatureValue } from './Models/forTemperature.value';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('Temperature')
+@UseGuards(AuthGuard('jwt'))
 export class TemperatureController {
   constructor(
     private readonly temperatureService: TemperatureService,
