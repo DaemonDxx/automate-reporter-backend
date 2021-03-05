@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { TemperatureController } from './temperature.controller';
 import { TemperatureService } from './temperature.service';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -16,6 +16,6 @@ import { MathService } from './math.service';
     StorageModule,
   ],
   controllers: [TemperatureController],
-  providers: [TemperatureService, MathService],
+  providers: [TemperatureService, MathService, Logger],
 })
 export class TemperatureModule {}

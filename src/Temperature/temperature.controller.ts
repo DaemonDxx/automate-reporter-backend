@@ -1,15 +1,27 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get, Inject, Logger, LoggerService,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards, UseInterceptors,
+} from '@nestjs/common';
 import { ParseFromFileDTO } from './DTO/ParseFromFile.dto';
 import { ParsedStatistic, TemperatureService } from './temperature.service';
 import { MathService } from './math.service';
 import { CountResult } from './Math/interfaces/countResult.interface';
 import { ForTemperatureValue } from './Models/forTemperature.value';
 import { AuthGuard } from '@nestjs/passport';
+import { LoggingInterceptor } from '../Utils/logging.interceptor';
 
 @Controller('Temperature')
 @UseGuards(AuthGuard('jwt'))
+@UseInterceptors(LoggingInterceptor)
 export class TemperatureController {
   constructor(
+    @Inject(Logger) private readonly logger: LoggerService,
     private readonly temperatureService: TemperatureService,
     private readonly mathService: MathService,
   ) {}
@@ -69,6 +81,4 @@ export class TemperatureController {
   // async updateValueForMonth(): Promise<ForTemperatureValue> {
   //
   // }
-
-
 }
