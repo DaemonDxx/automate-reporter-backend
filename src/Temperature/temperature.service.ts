@@ -12,6 +12,7 @@ import { ICoefficient } from './Models/coefficient.interface';
 import { Coefficient } from './Models/coefficient';
 import { DEPARTMENTS } from './departments.constant';
 import { TYPES_VALUE } from './typesValue.enum';
+import { FileNotFoundError } from '../Utils/Errors/FileNotFound.error';
 
 export interface ParsedStatistic {
   saved: number;
@@ -26,11 +27,10 @@ export class TemperatureService {
     private readonly storage: StorageService,
   ) {}
 
-  async parseFromFile(parseDTO: ParseFromFileDTO) {
+  async parseFromFile(parseDTO: ParseFromFileDTO): Promise<ParsedStatistic> {
     const { isUpdateOldValue, ...parseOption } = parseDTO.options;
-    const parser: TemperatureFactorStrategy = new TemperatureFactorStrategy(
-      await this.getWorkSheet(parseDTO.filename, 'Анализ'),
-    );
+    const ws: WorkSheet = await this.getWorkSheet(parseDTO.filename, 'Анализ');
+    const parser: TemperatureFactorStrategy = new TemperatureFactorStrategy(ws);
     const parsedValues: TValue[] = parser.parse(parseOption);
     return await this.saveValues(parsedValues, isUpdateOldValue);
   }
@@ -38,7 +38,12 @@ export class TemperatureService {
   private async getWorkSheet(filename, sheetName: string): Promise<WorkSheet> {
     const file: Buffer = await this.storage.getBufferOfFile(filename);
     const wb: WorkBook = read(file, { type: 'buffer' });
-    return wb.Sheets[sheetName];
+    const ws: WorkSheet = wb.Sheets[sheetName];
+    if (!ws)
+      throw new Error(
+        `Страницы ${sheetName} в файле ${filename} не существует`,
+      );
+    return ws;
   }
 
   private async saveValues(

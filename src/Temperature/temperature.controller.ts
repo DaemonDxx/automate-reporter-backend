@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { ParseFromFileDTO } from './DTO/ParseFromFile.dto';
 import { ParsedStatistic, TemperatureService } from './temperature.service';
 import { MathService } from './math.service';
@@ -18,7 +28,11 @@ export class TemperatureController {
   async parseValueFromFile(
     @Body() parseDTO: ParseFromFileDTO,
   ): Promise<ParsedStatistic> {
-    return this.temperatureService.parseFromFile(parseDTO);
+    try {
+      return await this.temperatureService.parseFromFile(parseDTO);
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 
   @Post('/coefficient/file')
@@ -69,6 +83,4 @@ export class TemperatureController {
   // async updateValueForMonth(): Promise<ForTemperatureValue> {
   //
   // }
-
-
 }
