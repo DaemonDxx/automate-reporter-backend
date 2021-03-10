@@ -1,4 +1,4 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema,  SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ACCESS_LIST, GetAccessListArray } from '../../User/access.list';
 
