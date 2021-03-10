@@ -1,7 +1,8 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post, UseInterceptors } from '@nestjs/common';
 import { CreateUserDTO } from './createUser.dto';
 import { User } from '../dbModels/User/user.schema';
 import { UserService } from './user.service';
+import { LoggingInterceptor } from '../Utils/logging.interceptor';
 
 @Controller('user')
 export class UserController {

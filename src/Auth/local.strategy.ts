@@ -8,13 +8,15 @@ import { User } from '../dbModels/User/user.schema';
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
 
-  constructor(private userService: UserService) {
+  constructor(
+    private readonly userService: UserService
+  ) {
     super();
   }
 
   async validate(username: string, password: string): Promise<User> {
     const user = await this.userService.validateUser(username, password);
-    if (!user) throw new UnauthorizedException();
+    if (!user) throw new UnauthorizedException('Неверный логин или пароль');
     delete user.password;
     return user;
   }

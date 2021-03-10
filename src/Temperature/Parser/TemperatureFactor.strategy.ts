@@ -53,6 +53,9 @@ export class TemperatureFactorStrategy {
               rangeMonth.s.r + 1,
               rangeMonth.s.c,
             );
+            if (!this.sh[utils.encode_cell({ r: rowDepartment, c: addressYear.c })]?.v) {
+              continue;
+            }
             result.push({
               department: department,
               month: this.MONTHS.indexOf(month),

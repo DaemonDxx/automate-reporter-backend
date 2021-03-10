@@ -5,14 +5,13 @@ import { FileNotFoundError } from '../Utils/Errors/FileNotFound.error';
 
 @Injectable()
 export class StorageService {
-
   __dirname: string;
 
   constructor() {
     this.__dirname = dirname(__dirname);
   }
 
-  async getBufferOfFile(filename: string, dir = 'upload'): Promise<Buffer> {
+  async getBufferOfFile(filename: string, dir = 'uploads'): Promise<Buffer> {
     try {
       const fullPath: string = join(this.__dirname, dir, filename);
       const buffer: Buffer = await fs.promises.readFile(fullPath);
@@ -34,7 +33,4 @@ export class StorageService {
     await fs.promises.writeFile(fullPath, buffer);
     return true;
   }
-
 }
-
-

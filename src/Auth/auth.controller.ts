@@ -1,9 +1,11 @@
-import { Controller, Get, Post, Req, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Request, UseGuards, UseInterceptors } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { UserService } from '../User/user.service';
+import { LoggingInterceptor } from '../Utils/logging.interceptor';
 
 @Controller('/auth')
+@UseInterceptors(LoggingInterceptor)
 export class AuthController {
   constructor(
     private userService: UserService,
