@@ -5,6 +5,7 @@ export enum TypesFile {
   Weekly = 'WEEKLY',
   TemperatureCoefficientsTable = 'TemperatureCoefficients',
   TemperatureTable = 'TemperatureTable',
+  NoType = 'NoType',
 }
 
 export type BaseUploadFile = Timestamp & {
@@ -13,4 +14,6 @@ export type BaseUploadFile = Timestamp & {
   type: TypesFile;
 };
 
-export type UploadFile = BaseUploadFile & Parseble;
+export type ParsebleFile = BaseUploadFile & Parseble;
+
+export type CreateFilenameFunction = (type: TypesFile) => string;

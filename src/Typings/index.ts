@@ -1,4 +1,4 @@
 export type Timestamp = {
-  createAt: number;
-  updateAt: number;
+  createAt?: number;
+  updateAt?: number;
 };

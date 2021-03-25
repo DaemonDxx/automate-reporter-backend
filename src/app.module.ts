@@ -10,10 +10,13 @@ import { StorageModule } from './Storage/storage.module';
 import { TemperatureModule } from './Temperature/temperature.module';
 import { UserModule } from './User/user.module';
 import { AuthModule } from './Auth/auth.module';
-
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     FilesModule,
     MongooseModule.forRoot(
       'mongodb://' + (process.env.DB_HOST || '127.0.0.1') + ':27017',
@@ -21,7 +24,7 @@ import { AuthModule } from './Auth/auth.module';
     ReportModule,
     TemplaterModule,
     StorageModule,
-    TemperatureModule,
+    // TemperatureModule,
     UserModule,
     AuthModule,
   ],

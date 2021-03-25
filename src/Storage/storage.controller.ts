@@ -1,52 +1,56 @@
 import {
-  BadRequestException,
+  BadRequestException, Body,
   Controller,
-  Get,
+  Inject,
+  Logger,
+  LoggerService,
   Post,
   UploadedFile,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
 import { StorageService } from './storage.service';
-import { dirname, join } from 'path';
 import { AuthGuard } from '@nestjs/passport';
+import { BaseUploadFile, ParsebleFile, TypesFile } from '../Typings/Modules/Storage';
+import { UpdateFileInfoDto } from './DTO/updateFileInfo.dto';
+import { ParseResultStatus } from '../Typings/Modules/Parser';
+import { toArray } from '../Utils/toArray.function';
 
 @Controller('storage')
 @UseGuards(AuthGuard('jwt'))
 export class StorageController {
-  constructor(private readonly storageService: StorageService) {}
+  constructor(
+    @Inject(Logger) private readonly logger: LoggerService,
+    private readonly storageService: StorageService,
+  ) {}
 
   @Post('/upload')
-  @UseInterceptors(
-    FileInterceptor('file', {
-      fileFilter: (req, file, callback) => {
-        const res =
-          file.mimetype ===
-          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-        callback(null, res);
-      },
-      storage: diskStorage({
-        destination:
-          process.env.UPLOAD_PATH ?? join(dirname(__dirname), 'uploads'),
-        filename: (req, file, callback) => {
-          const date = new Date();
-          callback(
-            null,
-            `${date.getFullYear()}.${
-              date.getMonth() + 1
-            }.${date.getDay()}-${Math.random()}.xlsx`,
-          );
-        },
-      }),
-    }),
-  )
-  async uploadFiles(@UploadedFile() file) {
-    if (!file)
-      throw new BadRequestException({
-        message: 'Данный тип файла не поддерживается',
-      });
-    return { filename: file.filename };
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFiles(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<BaseUploadFile> {
+    if (!file) throw new BadRequestException('Файл не загружен');
+    const newFile = await this.storageService.create({
+      user: 'root',
+      filename: file.filename,
+      type: TypesFile.NoType,
+      result: ParseResultStatus.Ready,
+    });
+    this.logger.log(
+      `Сохранен файл ${newFile.filename}, пользователь: ${newFile.user}`,
+    );
+    return newFile;
+  }
+
+  @Post('/file')
+  @UsePipes(ValidationPipe)
+  async updateFileInfo(@Body() dto: UpdateFileInfoDto): Promise<ParsebleFile> {
+    if (toArray(TypesFile).includes(dto.type)) {
+      const updatedFile = await this.storageService.update(dto);
+      return updatedFile;
+    } else {
+      throw new BadRequestException('Данный тип файлов не поддерживается');
+    }
   }
 }

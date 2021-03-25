@@ -5,24 +5,22 @@ export type Parser = {
   parseWorksheet: (ws: WorkSheet) => Value[];
 };
 
-enum ParseResultStatus {
-  Ready,
-  InProgress,
-  Success,
-  Failed,
-  NotParseble,
+export enum ParseResultStatus {
+  Ready = 'Ready',
+  InProgress = 'InProgress',
+  Success = 'Success',
+  Failed = 'Failed',
 }
 
 export type ParseInfo = {
-  timeStart?: number;
-  timeEnd?: number;
+  parseError?: string[];
+  timeStart?: Date;
+  timeEnd?: Date;
   countValues?: number;
-}
+};
 
 export type ParsedStatus = {
   result: ParseResultStatus;
-}
+};
 
 export type Parseble = ParsedStatus & ParseInfo;
-
-
