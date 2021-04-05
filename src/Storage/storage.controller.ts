@@ -1,5 +1,6 @@
 import {
-  BadRequestException, Body,
+  BadRequestException,
+  Body,
   Controller,
   Inject,
   Logger,
@@ -7,21 +8,29 @@ import {
   Post,
   UploadedFile,
   UseGuards,
-  UseInterceptors, UsePipes, ValidationPipe,
+  UseInterceptors,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { StorageService } from './storage.service';
 import { AuthGuard } from '@nestjs/passport';
-import { BaseUploadFile, ParsebleFile, TypesFile } from '../Typings/Modules/Storage';
+import {
+  BaseUploadFile,
+  ParsebleFile,
+  TypesFile,
+} from '../Typings/Modules/Storage';
 import { UpdateFileInfoDto } from './DTO/updateFileInfo.dto';
 import { ParseResultStatus } from '../Typings/Modules/Parser';
-import { toArray } from '../Utils/toArray.function';
+import { EventEmitter2 } from 'eventemitter2';
+import { FileUploadEvent } from './Events/fileUpload.event';
 
 @Controller('storage')
 @UseGuards(AuthGuard('jwt'))
 export class StorageController {
   constructor(
     @Inject(Logger) private readonly logger: LoggerService,
+    private readonly events: EventEmitter2,
     private readonly storageService: StorageService,
   ) {}
 
@@ -44,13 +53,26 @@ export class StorageController {
   }
 
   @Post('/file')
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   async updateFileInfo(@Body() dto: UpdateFileInfoDto): Promise<ParsebleFile> {
-    if (toArray(TypesFile).includes(dto.type)) {
-      const updatedFile = await this.storageService.update(dto);
-      return updatedFile;
-    } else {
-      throw new BadRequestException('Данный тип файлов не поддерживается');
-    }
+    const fileStatus = await this.storageService.getFileStatus(dto._id);
+    if (fileStatus !== ParseResultStatus.Ready)
+      throw new BadRequestException(
+        'Информацию о файле невозможно обновить более одного раза',
+      );
+    const updatedFile = await this.storageService.update(dto);
+    const buff: Buffer = await this.storageService.getBufferOfFile(
+      updatedFile.filename,
+    );
+    this.events.emit(
+      FileUploadEvent.Name,
+      new FileUploadEvent({
+        filename: updatedFile.filename,
+        type: dto.type,
+        _id: updatedFile._id,
+        buffer: buff,
+      }),
+    );
+    return updatedFile;
   }
 }

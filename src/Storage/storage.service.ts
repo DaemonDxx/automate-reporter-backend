@@ -1,17 +1,14 @@
 import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { dirname, join } from 'path';
 import * as fs from 'fs';
-import { FileNotFoundError } from '../Utils/Errors/FileNotFound.error';
-import {
-  BaseUploadFile,
-  ParsebleFile,
-  TypesFile,
-} from '../Typings/Modules/Storage';
+
 import { InjectModel } from '@nestjs/mongoose';
-import { File } from './Schemas/file.schema';
 import { Model } from 'mongoose';
-import { MongooseCRUDService } from '../Utils/mongoose/MongooseCRUDService';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { ParsebleFile, TypesFile } from '../Typings/Modules/Storage';
+import { MongooseCRUDService } from '../Utils/mongoose/MongooseCRUDService';
+import { File } from './Schemas/file.schema';
+import { ParseResultStatus } from '../Typings/Modules/Parser';
 
 @Injectable()
 export class StorageService extends MongooseCRUDService<ParsebleFile> {
@@ -25,16 +22,18 @@ export class StorageService extends MongooseCRUDService<ParsebleFile> {
     this.__dirname = dirname(__dirname);
   }
 
-  async getBufferOfFile(filename: string, dir = 'uploads'): Promise<Buffer> {
+  async getBufferOfFile(
+    filename: string,
+    dir = 'uploads',
+  ): Promise<Buffer | null> {
     try {
       const fullPath: string = join(this.__dirname, dir, filename);
       const buffer: Buffer = await fs.promises.readFile(fullPath);
       return buffer;
     } catch (e) {
-      console.error(e);
-      throw new FileNotFoundError(filename);
+      this.logger.error(e.message);
+      return null;
     }
-    return;
   }
 
   //Todo Сделать обработку ошибок
@@ -46,6 +45,11 @@ export class StorageService extends MongooseCRUDService<ParsebleFile> {
     const fullPath: string = join(this.__dirname, dir, filename);
     await fs.promises.writeFile(fullPath, buffer);
     return true;
+  }
+
+  async getFileStatus(_id: string): Promise<ParseResultStatus> {
+    const file: ParsebleFile = await this.FileModel.findById(_id);
+    return file.result;
   }
 
   @Cron(CronExpression.EVERY_6_HOURS)

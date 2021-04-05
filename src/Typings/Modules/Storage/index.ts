@@ -2,7 +2,7 @@ import { Timestamp } from '../../index';
 import { Parseble } from '../Parser';
 
 export enum TypesFile {
-  Weekly = 'WEEKLY',
+  Weekly = 'Weekly',
   TemperatureCoefficientsTable = 'TemperatureCoefficients',
   TemperatureTable = 'TemperatureTable',
   NoType = 'NoType',

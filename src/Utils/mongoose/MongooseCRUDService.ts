@@ -1,6 +1,6 @@
 import { Document, FilterQuery, Model, UpdateQuery } from 'mongoose';
 import { Timestamp } from '../../Typings';
-import { Parseble } from '../../Typings/Modules/Parser';
+import { File } from '../../Storage/Schemas/file.schema';
 
 export abstract class MongooseCRUDService<
   T,
@@ -16,6 +16,11 @@ export abstract class MongooseCRUDService<
   async find(query: FilterQuery<D>): Promise<D[]> {
     const findItems = await this.model.find(query);
     return findItems;
+  }
+
+  async findByID(_id: string): Promise<D> {
+    const findItem = await this.model.findById(_id);
+    return findItem;
   }
 
   async update(update: UpdateQuery<D>): Promise<D> {

@@ -9,7 +9,7 @@ import { Value } from '../dbModels/WeeklyModels/value.schema';
 import { ParserService } from '../Parser/parser.service';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Description} from '../dbModels/WeeklyModels/description.schema';
+import { Description } from '../dbModels/WeeklyModels/description.schema';
 import { CheckerService } from '../Checker/checker.service';
 import { IDescription } from '../dbModels/Interfaces/description.interface';
 
@@ -44,27 +44,27 @@ export class FilesService {
     }
   }
 
-  async parseFile(parseFileOption: ParseFileDto): Promise<ParsedFile> {
-    const report = await this.Report.findById(parseFileOption.id_report);
-    const buffer: Buffer = await this.getBufferOfFile(parseFileOption.filename);
-    const result: IResultParsing = this.parserService.parse({
-      file: buffer,
-      type: report.type,
-    });
-    await this.unActiveFileByDepartment(report, result.department);
-    const file: ParsedFile = await this.saveParsedFile(
-      report,
-      result.department,
-      parseFileOption.filename,
-    );
-    const values: Array<Value> = await this.saveValues(result, file);
-    const errors: Array<string> = await this.checker.checkFile(
-      report.type,
-      file,
-    );
-    file.valueErrors = errors;
-    return await file.save();
-  }
+  // async parseFile(parseFileOption: ParseFileDto): Promise<ParsedFile> {
+  //   const report = await this.Report.findById(parseFileOption.id_report);
+  //   const buffer: Buffer = await this.getBufferOfFile(parseFileOption.filename);
+  //   const result: IResultParsing = this.parserService.parse({
+  //     file: buffer,
+  //     type: report.type,
+  //   });
+  //   await this.unActiveFileByDepartment(report, result.department);
+  //   const file: ParsedFile = await this.saveParsedFile(
+  //     report,
+  //     result.department,
+  //     parseFileOption.filename,
+  //   );
+  //   const values: Array<Value> = await this.saveValues(result, file);
+  //   const errors: Array<string> = await this.checker.checkFile(
+  //     report.type,
+  //     file,
+  //   );
+  //   file.valueErrors = errors;
+  //   return await file.save();
+  // }
 
   private async saveParsedFile(
     report: Report,

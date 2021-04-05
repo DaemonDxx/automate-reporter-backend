@@ -1,17 +1,16 @@
-import {
-  Event$FileUpload,
-  Payload$FileUpload,
-} from '../../Typings/Modules/Events';
-import { BaseEvent } from '../../Events';
+import { EventStorage$FileUpload } from '../../Typings/Modules/Events/storage';
+import { TypesFile } from '../../Typings/Modules/Storage';
+import * as mongoose from 'mongoose';
 
-export class FileUploadEvent extends BaseEvent implements Event$FileUpload {
+export class FileUploadEvent implements EventStorage$FileUpload {
   static Name = 'storage.upload';
-  filename: string;
-  user_id: string;
 
-  constructor(payload: Payload$FileUpload) {
-    super();
-    this.filename = payload.filename;
-    this.user_id = payload.user_id;
+  constructor(eventInfo: EventStorage$FileUpload) {
+    Object.assign(this, eventInfo);
   }
+
+  filename: string;
+  type: TypesFile;
+  _id: mongoose.Schema.Types.ObjectId;
+  buffer: Buffer;
 }

@@ -24,11 +24,11 @@ export class FilesController {
     private readonly parserService: ParserService,
   ) {}
 
-  @Post()
-  async createFile(@Body() parseFileOption: ParseFileDto): Promise<ParsedFile> {
-    const file = await this.filesService.parseFile(parseFileOption);
-    return file;
-  }
+  // @Post()
+  // async createFile(@Body() parseFileOption: ParseFileDto): Promise<ParsedFile> {
+  //   const file = await this.filesService.parseFile(parseFileOption);
+  //   return file;
+  // }
 
   @Get()
   async getFilesByReport(

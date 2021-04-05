@@ -9,6 +9,9 @@ async function bootstrap() {
       transports: [
         new winston.transports.Console({
           format: winston.format.combine(
+            winston.format.errors({
+              stack: true,
+            }),
             winston.format.timestamp(),
             utilities.format.nestLike(),
           ),

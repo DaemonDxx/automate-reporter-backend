@@ -1,8 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {
-  ParsebleFile,
-  TypesFile,
-} from '../../Typings/Modules/Storage';
+import { ParsebleFile, TypesFile } from '../../Typings/Modules/Storage';
 import { Document } from 'mongoose';
 import { ParseResultStatus } from '../../Typings/Modules/Parser';
 import { toArray } from '../../Utils/toArray.function';
@@ -47,7 +44,7 @@ export class File extends Document implements ParsebleFile {
   timeStart?: Date;
 
   @Prop()
-  parseError?: string[];
+  parseErrors?: string[];
 }
 
 export const FileSchema = SchemaFactory.createForClass<File>(File);

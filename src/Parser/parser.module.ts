@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ParserService } from './parser.service';
 
 @Module({
-  providers: [ParserService],
+  providers: [ParserService, Logger],
   exports: [ParserService],
 })
 export class ParserModule {}

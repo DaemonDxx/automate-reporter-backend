@@ -1,6 +1,6 @@
 import { IParserStrategy } from './ParserStrategy/parserStrategy.interface';
-import { TYPES_REPORT } from '../Utils/typesReport.constant';
 import { WeeklyStrategy } from './ParserStrategy/Weekly/weekly.strategy';
+import { TypesFile } from '../Typings/Modules/Storage';
 
 export class StrategyFactory {
   private strategies = new Map();
@@ -12,7 +12,10 @@ export class StrategyFactory {
     let strategy: IParserStrategy;
 
     switch (type) {
-      case TYPES_REPORT.WEEKLY:
+      case TypesFile.Weekly:
+        strategy = new WeeklyStrategy();
+        break;
+      case TypesFile.TemperatureCoefficientsTable:
         strategy = new WeeklyStrategy();
         break;
     }
