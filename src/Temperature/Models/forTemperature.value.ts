@@ -32,5 +32,5 @@ export class ForTemperatureValue extends Document {
 }
 
 export const ForTemperatureValueSchema = SchemaFactory.createForClass(
-  ForTemperatureValue
+  ForTemperatureValue,
 );

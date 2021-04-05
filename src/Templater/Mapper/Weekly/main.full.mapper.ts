@@ -51,7 +51,9 @@ export class MainFullMapper implements IMapper {
     this.currentSheet = wb.getWorksheet('Текущий');
 
     for (let i = this.row_start; i < this.maxSteps; i++) {
-      const cell_consumer: Cell = this.currentSheet.getCell(`${this.column_consumer}${i}`);
+      const cell_consumer: Cell = this.currentSheet.getCell(
+        `${this.column_consumer}${i}`,
+      );
       if (!cell_consumer) {
         break;
       }
@@ -78,7 +80,9 @@ export class MainFullMapper implements IMapper {
 
   private mapAllField(row: number) {
     let key: string;
-    this.descriptor.department = <string>this.currentSheet.getCell(`${this.column_department}${row}`).value;
+    this.descriptor.department = <string>(
+      this.currentSheet.getCell(`${this.column_department}${row}`).value
+    );
     this.descriptor.branch = 'all';
     this.descriptor.consumer = 'all';
     this.descriptor.year = 'before';

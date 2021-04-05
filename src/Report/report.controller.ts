@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  UsePipes,
+} from '@nestjs/common';
 import { Report } from '../dbModels/WeeklyModels/report.schema';
 import { CreateReportDto } from '../DTO/createReport.dto';
 import { ReportService } from './report.service';

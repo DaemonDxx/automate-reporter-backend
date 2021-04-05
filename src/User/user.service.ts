@@ -16,9 +16,7 @@ export class UserService {
       username: createUserDTO.username,
     });
     if (oldUser) {
-      throw new Error(
-        'Пользователь с таким именем уже существует',
-      );
+      throw new Error('Пользователь с таким именем уже существует');
     }
     const newUser = await new this.User({
       username: createUserDTO.username,

@@ -2,7 +2,7 @@ export const ACCESS_LIST = {
   CREATOR: 'CREATOR',
   TEMPERATURE_GET: 'TEMPERATURE_GET',
   TEMPERATURE_CHANGE: 'TEMPERATURE_CHANGE',
-  BASE: 'BASE'
+  BASE: 'BASE',
 };
 
 export function GetAccessListArray() {

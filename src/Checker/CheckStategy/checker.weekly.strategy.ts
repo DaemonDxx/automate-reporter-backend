@@ -46,7 +46,9 @@ export class CheckerWeeklyStrategy implements ICheckerStrategy {
   private createErrorDescription(value: Value): string {
     const descriptor: DescriptorWeekly = new DescriptorWeekly();
     descriptor.setDBModel(value.description);
-    return `${descriptor.createMetadata()}: (${value.v}) ${this.ERROR_DESCRIPTION}`;
+    return `${descriptor.createMetadata()}: (${value.v}) ${
+      this.ERROR_DESCRIPTION
+    }`;
   }
 
   private async findBeforeFile(file: ParsedFile): Promise<ParsedFile> {
@@ -65,7 +67,7 @@ export class CheckerWeeklyStrategy implements ICheckerStrategy {
         report: reports[1],
         isActive: true,
       });
-      return file.length > 0 ? file[0]: null;
+      return file.length > 0 ? file[0] : null;
     }
   }
 

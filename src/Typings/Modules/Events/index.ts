@@ -1,6 +1,4 @@
-export type Event$Base = {
-
-};
+export type Event$Base = {};
 
 export type Payload$FileUpload = {
   filename: string;
@@ -8,4 +6,3 @@ export type Payload$FileUpload = {
 };
 
 export type Event$FileUpload = Event$Base & Payload$FileUpload;
-

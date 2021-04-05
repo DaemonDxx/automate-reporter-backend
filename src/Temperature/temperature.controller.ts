@@ -98,7 +98,9 @@ export class TemperatureController {
     @Body() value: TValue,
   ): Promise<ForTemperatureValue> {
     try {
-      const updatedValue: ForTemperatureValue = await this.temperatureService.updateValue(value);
+      const updatedValue: ForTemperatureValue = await this.temperatureService.updateValue(
+        value,
+      );
       return updatedValue;
     } catch (e) {
       throw new BadRequestException(e.message);

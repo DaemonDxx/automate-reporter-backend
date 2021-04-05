@@ -9,4 +9,3 @@ export enum Departments {
   ChE = '"Читаэнерго"',
   TE = 'АО "Тываэнерго"',
 }
-

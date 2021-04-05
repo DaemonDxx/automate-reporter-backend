@@ -4,12 +4,7 @@ import { CreateMapDto } from './DTO/createMap.dto';
 
 @Controller('templater')
 export class TemplaterController {
-
-  constructor(
-    private readonly templaterService: TemplaterService
-  ) {
-
-  }
+  constructor(private readonly templaterService: TemplaterService) {}
   // @Get()
   // async generateFilesByReport(@Param('reportID' reportID:string)): Promise<null> {
   //
@@ -19,5 +14,4 @@ export class TemplaterController {
   async mapFile(@Body() createMapDto: CreateMapDto) {
     await this.templaterService.mapFile(createMapDto);
   }
-
 }

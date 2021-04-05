@@ -2,9 +2,6 @@ import { MainFullFile } from './main.full.file';
 import { Value } from '../../../dbModels/WeeklyModels/value.schema';
 
 export class HqFile extends MainFullFile {
-
-
-
   // constructor(baseFile?: Buffer) {
   //   super();
   //   if (baseFile) {

@@ -4,13 +4,9 @@ import { Strategy } from 'passport-local';
 import { UserService } from '../User/user.service';
 import { User } from '../dbModels/User/user.schema';
 
-
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
-
-  constructor(
-    private readonly userService: UserService
-  ) {
+  constructor(private readonly userService: UserService) {
     super();
   }
 
@@ -20,5 +16,4 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     delete user.password;
     return user;
   }
-
 }
