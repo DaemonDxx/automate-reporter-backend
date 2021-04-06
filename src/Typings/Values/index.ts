@@ -1,9 +1,11 @@
 import { Departments } from '../departments';
+import { type } from 'os';
 
 export enum TypesValue {
   Reception = 'Reception',
   Recoil = 'Recoil',
   Constant = 'Constant',
+  Temperature = 'Temperature',
 }
 
 export type ImportedFromFile = {
@@ -15,17 +17,29 @@ export type BaseValue = {
   type: TypesValue;
   description: string;
   v: number;
+};
+
+export type Dated = {
   year?: number;
   month?: number;
+  day?: number;
 };
 
 export type Range = {
-  to: number;
-  from: number;
+  minTemp: number;
+  maxTemp: number;
 };
 
-export type TemperatureCoefficient = BaseValue & Range;
+export interface Temperature extends BaseValue, Dated {
+  type: TypesValue.Constant;
+}
 
-export type WeeklyValues = BaseValue & ImportedFromFile;
+export interface ElectricityVolume extends BaseValue, Dated, ImportedFromFile {
+  type: TypesValue.Reception | TypesValue.Recoil;
+}
 
-export type Value = BaseValue | TemperatureCoefficient | WeeklyValues;
+export interface TemperatureCoefficient extends BaseValue, Range {
+  type: TypesValue.Constant;
+}
+
+export type Value = TemperatureCoefficient | ElectricityVolume | Temperature;

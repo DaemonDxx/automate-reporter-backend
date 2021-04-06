@@ -62,16 +62,14 @@ export class StorageService extends MongooseCRUDService<ParsebleFile> {
 
   @OnEvent('parse.*')
   async failedParseFile(event: ParseFailedEvent | ParseSuccessEvent) {
-    const file: File[] = await this.find({
-      filename: event.filename,
-    });
-    file[0].result = event.result;
+    const file: File = await this.findByID(event._id);
+    file.result = event.result;
     if (!(event instanceof ParseSuccessEvent)) {
-      file[0].parseErrors = event.parseErrors;
+      file.parseErrors = event.parseErrors;
     } else {
-      file[0].countValues = event.result.length;
+      file.countValues = event.result.length;
     }
-    await file[0].save();
+    await file.save();
   }
 
   @Cron(CronExpression.EVERY_6_HOURS)

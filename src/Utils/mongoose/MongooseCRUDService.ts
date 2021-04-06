@@ -1,6 +1,7 @@
 import { Document, FilterQuery, Model, UpdateQuery } from 'mongoose';
 import { Timestamp } from '../../Typings';
 import { File } from '../../Storage/Schemas/file.schema';
+import * as mongoose from 'mongoose';
 
 export abstract class MongooseCRUDService<
   T,
@@ -18,7 +19,7 @@ export abstract class MongooseCRUDService<
     return findItems;
   }
 
-  async findByID(_id: string): Promise<D> {
+  async findByID(_id: string | mongoose.Schema.Types.ObjectId): Promise<D> {
     const findItem = await this.model.findById(_id);
     return findItem;
   }

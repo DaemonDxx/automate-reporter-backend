@@ -3,7 +3,7 @@ import {
   XLSX$FindParam,
   XLSX$FindResult,
   XLSX$Iterator,
-} from '../../Typings/Modules/Parser/xlsx.utills';
+} from '../../Typings/Utils/xlsx/xlsx.utills';
 import { CellAddress, CellObject, utils, WorkSheet } from 'xlsx';
 
 const defaultFindParam: Required<XLSX$FindParam> = {
@@ -21,13 +21,14 @@ const defaultFindParam: Required<XLSX$FindParam> = {
 };
 
 export abstract class XLSXHelper {
-  protected constructor(private ws: WorkSheet) {}
+  ws: WorkSheet;
 
   //TODO доработать проверку по параметрам
-  *findCellWithValue(
-    value: string,
+  *findCellsWithValue(
+    value: string | number,
     params: XLSX$FindParam = defaultFindParam,
   ): IterableIterator<XLSX$FindResult> {
+    params = Object.assign({}, defaultFindParam, params);
     for (const key in this.ws) {
       if (key[0] === '!') continue;
 
@@ -42,17 +43,26 @@ export abstract class XLSXHelper {
         continue;
 
       const cell: CellObject = this.ws[key];
-      if (cell.f && params.skipFunctionResult) continue;
-
-      if (cell.v && cell.v === value)
+      if (cell?.f && params.skipFunctionResult) continue;
+      if (!cell) continue;
+      const v = cell.v;
+      if (typeof v === 'string') {
+        v.trim();
+      }
+      if (v == value)
         yield {
           address,
           cell,
         };
     }
+    return null;
   }
 
-  getValue(address: CellAddress): string {
-    return this.ws[utils.encode_cell(address)].v;
+  getStringByCell(address: CellAddress): string {
+    return this.ws[utils.encode_cell(address)]?.v;
+  }
+
+  getFloatByCell(address: CellAddress): number {
+    return parseFloat(this.ws[utils.encode_cell(address)]?.v);
   }
 }

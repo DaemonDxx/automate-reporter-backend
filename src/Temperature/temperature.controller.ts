@@ -38,7 +38,7 @@ export class TemperatureController {
     @Body() parseDTO: ParseFromFileDTO,
   ): Promise<SaveValuesStatistic> {
     try {
-      return await this.temperatureService.parseFromFile(parseDTO);
+      return null;
     } catch (e) {
       throw new BadRequestException(e.message);
     }
@@ -48,14 +48,14 @@ export class TemperatureController {
   async parseCoefficientFromFile(
     @Body('filename') filename: string,
   ): Promise<string[]> {
-    const result: Map<
-      string,
-      number
-    > = await this.temperatureService.parseCoefficientFromFile(filename);
+    // const result: Map<
+    //   string,
+    //   number
+    // > = await this.temperatureService.parseCoefficientFromFile(filename);
     const arr: string[] = [];
-    for (const [key, value] of result.entries()) {
-      arr.push(`${key}: ${value}`);
-    }
+    // for (const [key, value] of result.entries()) {
+    //   arr.push(`${key}: ${value}`);
+    // }
     return arr;
   }
 

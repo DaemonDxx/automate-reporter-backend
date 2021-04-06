@@ -1,6 +1,7 @@
 import { IParserStrategy } from './ParserStrategy/parserStrategy.interface';
-import { WeeklyStrategy } from './ParserStrategy/Weekly/weekly.strategy';
 import { TypesFile } from '../Typings/Modules/Storage';
+import { CoefficientStrategy } from './ParserStrategy/TemperatureFactor/Coefficient.strategy';
+import { TemperatureFactorStrategy } from './ParserStrategy/TemperatureFactor/TemperatureFactor.strategy';
 
 export class StrategyFactory {
   private strategies = new Map();
@@ -13,11 +14,13 @@ export class StrategyFactory {
 
     switch (type) {
       case TypesFile.Weekly:
-        strategy = new WeeklyStrategy();
+        //strategy = new WeeklyStrategy();
         break;
       case TypesFile.TemperatureCoefficientsTable:
-        strategy = new WeeklyStrategy();
+        strategy = new CoefficientStrategy();
         break;
+      case TypesFile.TemperatureTable:
+        strategy = new TemperatureFactorStrategy();
     }
 
     this.strategies.set(type, strategy);

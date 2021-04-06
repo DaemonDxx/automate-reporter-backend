@@ -1,8 +1,9 @@
 import { ParseResultStatus } from '../Parser';
 import { Value } from '../../Values';
 import { ParsebleFile } from '../Storage';
+import { MongooseID } from '../../index';
 
-type EventParser$Base = Required<Pick<ParsebleFile, 'filename'>>;
+type EventParser$Base = Required<Pick<ParsebleFile, 'filename'> & MongooseID>;
 
 type SuccessResult = {
   result: ParseResultStatus.Success;

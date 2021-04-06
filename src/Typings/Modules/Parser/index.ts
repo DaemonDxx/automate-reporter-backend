@@ -23,4 +23,11 @@ export type ParsedStatus = {
   result: ParseResultStatus;
 };
 
+export type Options$TemperatureTable = {
+  startYear: number;
+  endYear: number;
+};
+
+export type ParseOptions = Options$TemperatureTable;
+
 export type Parseble = ParsedStatus & ParseInfo;

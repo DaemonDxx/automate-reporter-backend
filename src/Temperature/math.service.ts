@@ -3,12 +3,12 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Coefficient } from './Models/coefficient';
 import { ForTemperatureValue } from './Models/forTemperature.value';
-import { DEPARTMENTS } from './departments.constant';
-import { TYPES_VALUE } from './typesValue.enum';
 import { FullMonthAlgorithm } from './Math/full.month.algorithm';
 import { DataForAlgorithm } from './Math/interfaces/dataForAlgorithm.interface';
 import { Offset } from './Math/interfaces/offset.interface';
 import { CountResult } from './Math/interfaces/countResult.interface';
+import { toArray } from '../Utils/toArray.function';
+import { Departments } from '../Typings/departments';
 
 @Injectable()
 export class MathService {
@@ -25,7 +25,7 @@ export class MathService {
     const values2: ForTemperatureValue[] = await this.TValue.find({
       year: yearCompare2,
     });
-    for (const department of DEPARTMENTS) {
+    for (const department of toArray(Departments)) {
       const offsetsOfDepartment: Offset[] = [];
       for (let i = 0; i < this.getQuantityOfMonthForCount(values2); i++) {
         const data1: DataForAlgorithm = await this.getDataForAlgorithm(
@@ -68,7 +68,7 @@ export class MathService {
     });
     let temp: number;
     let reception: number;
-    if (findResult[0].type === TYPES_VALUE.TEMPERATURE) {
+    if (findResult[0].type === '') {
       temp = findResult[0].value;
       reception = findResult[1].value;
     } else {

@@ -1,4 +1,0 @@
-export const TYPES_VALUE = {
-  TEMPERATURE: 'TEMPERATURE',
-  RECEPTION: 'RECEPTION',
-};

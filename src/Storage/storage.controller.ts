@@ -60,10 +60,11 @@ export class StorageController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async updateFileInfo(@Body() dto: UpdateFileInfoDto): Promise<ParsebleFile> {
     const fileStatus = await this.storageService.getFileStatus(dto._id);
-    if (fileStatus !== ParseResultStatus.Ready)
-      throw new BadRequestException(
-        'Информацию о файле невозможно обновить более одного раза',
-      );
+    //TODO Отключено для тестирования
+    // if (fileStatus !== ParseResultStatus.Ready)
+    //   throw new BadRequestException(
+    //     'Информацию о файле невозможно обновить более одного раза',
+    //   );
     const updatedFile = await this.storageService.update(dto);
     const buff: Buffer = await this.storageService.getBufferOfFile(
       updatedFile.filename,

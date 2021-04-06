@@ -1,6 +1,5 @@
 import { Document } from 'mongoose';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { TYPES_VALUE } from '../typesValue.enum';
 
 @Schema()
 export class ForTemperatureValue extends Document {
@@ -26,7 +25,7 @@ export class ForTemperatureValue extends Document {
 
   @Prop({
     required: true,
-    enum: Object.keys(TYPES_VALUE),
+    enum: Object.keys({}),
   })
   type: string;
 }
