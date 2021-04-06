@@ -6,6 +6,9 @@ import { EventEmitter2 } from 'eventemitter2';
 import { OnEvent } from '@nestjs/event-emitter';
 import { FileUploadEvent } from '../Storage/Events/fileUpload.event';
 import { ParseFailedEvent } from './Events/parseFailed.event';
+import { Value } from '../Typings/Values';
+import { ParseSuccessEvent } from './Events/parseSuccess.event';
+import { ParseResultStatus } from '../Typings/Modules/Parser';
 
 @Injectable()
 export class ParserService {
@@ -19,16 +22,24 @@ export class ParserService {
   }
 
   @OnEvent(FileUploadEvent.Name, { async: true })
-  parse(payload: FileUploadEvent): any {
+  parse(payload: FileUploadEvent) {
     this.logger.log('FileUploadEvent');
     try {
       const wb: WorkBook = this.readBook(payload.buffer);
       const indexActiveSheet: number = this.getActiveSheetIndex(wb);
       const activeSheet: WorkSheet = wb.Sheets[wb.SheetNames[indexActiveSheet]];
-      console.log(
-        this.strategyFactory.getStrategy(payload.type).parse(activeSheet),
+      const values: Value[] = this.strategyFactory
+        .getStrategy(payload.type)
+        .parse(activeSheet);
+      this.events.emit(
+        ParseSuccessEvent.Name,
+        new ParseSuccessEvent({
+          _id: payload._id,
+          filename: payload.filename,
+          result: ParseResultStatus.Success,
+          values,
+        }),
       );
-      return '';
     } catch (e) {
       this.logger.error(e);
       this.events.emit(
