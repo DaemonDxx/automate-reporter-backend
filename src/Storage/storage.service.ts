@@ -9,6 +9,14 @@ import { ParsebleFile, TypesFile } from '../Typings/Modules/Storage';
 import { MongooseCRUDService } from '../Utils/mongoose/MongooseCRUDService';
 import { File } from './Schemas/file.schema';
 import { ParseResultStatus } from '../Typings/Modules/Parser';
+import { OnEvent } from '@nestjs/event-emitter';
+import { ParseFailedEvent } from '../Parser/Events/parseFailed.event';
+import { ParsedFile } from '../dbModels/WeeklyModels/file.schema';
+import { ParseSuccessEvent } from '../Parser/Events/parseSuccess.event';
+import {
+  EventParser$Failed,
+  EventParser$Success,
+} from '../Typings/Modules/Events/parser';
 
 @Injectable()
 export class StorageService extends MongooseCRUDService<ParsebleFile> {
@@ -48,8 +56,22 @@ export class StorageService extends MongooseCRUDService<ParsebleFile> {
   }
 
   async getFileStatus(_id: string): Promise<ParseResultStatus> {
-    const file: ParsebleFile = await this.FileModel.findById(_id);
+    const file: File = await this.FileModel.findById(_id);
     return file.result;
+  }
+
+  @OnEvent('parse.*')
+  async failedParseFile(event: ParseFailedEvent | ParseSuccessEvent) {
+    const file: File[] = await this.find({
+      filename: event.filename,
+    });
+    file[0].result = event.result;
+    if (!(event instanceof ParseSuccessEvent)) {
+      file[0].parseErrors = event.parseErrors;
+    } else {
+      file[0].countValues = event.result.length;
+    }
+    await file[0].save();
   }
 
   @Cron(CronExpression.EVERY_6_HOURS)

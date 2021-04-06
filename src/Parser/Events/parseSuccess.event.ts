@@ -10,7 +10,5 @@ export class ParseSuccessEvent implements EventParser$Success {
   }
   filename: string;
   result: ParseResultStatus.Success;
-  timeEnd: Date;
-  timeStart: Date;
   values: Value[];
 }

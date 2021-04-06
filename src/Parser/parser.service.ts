@@ -7,7 +7,6 @@ import { EventEmitter2 } from 'eventemitter2';
 import { OnEvent } from '@nestjs/event-emitter';
 import { FileUploadEvent } from '../Storage/Events/fileUpload.event';
 import { ParseFailedEvent } from './Events/parseFailed.event';
-import { ParseResultStatus } from '../Typings/Modules/Parser';
 
 @Injectable()
 export class ParserService {
@@ -35,8 +34,7 @@ export class ParserService {
         ParseFailedEvent.Name,
         new ParseFailedEvent({
           filename: payload.filename,
-          parseErrors: e,
-          timeStart,
+          parseErrors: e.errors,
         }),
       );
     }

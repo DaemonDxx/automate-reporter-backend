@@ -2,10 +2,13 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Get,
   Inject,
   Logger,
   LoggerService,
+  Param,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -24,6 +27,7 @@ import { UpdateFileInfoDto } from './DTO/updateFileInfo.dto';
 import { ParseResultStatus } from '../Typings/Modules/Parser';
 import { EventEmitter2 } from 'eventemitter2';
 import { FileUploadEvent } from './Events/fileUpload.event';
+import { File } from './Schemas/file.schema';
 
 @Controller('storage')
 @UseGuards(AuthGuard('jwt'))
@@ -74,5 +78,11 @@ export class StorageController {
       }),
     );
     return updatedFile;
+  }
+
+  @Get(':id')
+  async getFileInfo(@Query('id') id: string): Promise<File> {
+    const file: File = await this.storageService.findByID(id);
+    return file;
   }
 }

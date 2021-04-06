@@ -2,9 +2,7 @@ import { ParseResultStatus } from '../Parser';
 import { Value } from '../../Values';
 import { ParsebleFile } from '../Storage';
 
-type EventParser$Base = Required<
-  Pick<ParsebleFile, 'filename' | 'timeStart' | 'timeEnd'>
->;
+type EventParser$Base = Required<Pick<ParsebleFile, 'filename'>>;
 
 type SuccessResult = {
   result: ParseResultStatus.Success;

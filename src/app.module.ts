@@ -16,7 +16,9 @@ import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
-    EventEmitterModule.forRoot(),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+    }),
     FilesModule,
     MongooseModule.forRoot(
       'mongodb://' + (process.env.DB_HOST || '127.0.0.1') + ':27017',

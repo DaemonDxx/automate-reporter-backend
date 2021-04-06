@@ -38,12 +38,6 @@ export class File extends Document implements ParsebleFile {
   countValues?: number;
 
   @Prop()
-  timeEnd?: Date;
-
-  @Prop()
-  timeStart?: Date;
-
-  @Prop()
   parseErrors?: string[];
 }
 
