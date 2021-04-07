@@ -9,7 +9,7 @@ export abstract class MongooseCRUDService<
 > {
   protected constructor(private readonly model: Model<D>) {}
 
-  async create(createDTO: Omit<T, keyof Timestamp>): Promise<D> {
+  async create(createDTO: Omit<T, keyof Document>): Promise<D> {
     const created = new this.model(createDTO);
     return created.save();
   }

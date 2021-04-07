@@ -1,8 +1,8 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-local';
-import { UserService } from '../User/user.service';
-import { User } from '../dbModels/User/user.schema';
+import { UserService } from './user.service';
+import { User, UserModel } from './Schemas/user.schema';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -11,9 +11,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(username: string, password: string): Promise<User> {
-    const user = await this.userService.validateUser(username, password);
+    const user: UserModel = await this.userService.validateUser(
+      username,
+      password,
+    );
     if (!user) throw new UnauthorizedException('Неверный логин или пароль');
-    delete user.password;
-    return user;
+    const u: User = new User(user);
+    delete u.password;
+    return u;
   }
 }

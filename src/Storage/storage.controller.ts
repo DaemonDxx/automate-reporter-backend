@@ -9,6 +9,7 @@ import {
   Param,
   Post,
   Query,
+  Req,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -58,7 +59,10 @@ export class StorageController {
 
   @Post('/file')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async updateFileInfo(@Body() dto: UpdateFileInfoDto): Promise<ParsebleFile> {
+  async updateFileInfo(
+    @Req() req: Express.Request,
+    @Body() dto: UpdateFileInfoDto,
+  ): Promise<ParsebleFile> {
     const fileStatus = await this.storageService.getFileStatus(dto._id);
     //TODO Отключено для тестирования
     // if (fileStatus !== ParseResultStatus.Ready)

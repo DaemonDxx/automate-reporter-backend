@@ -4,7 +4,6 @@ import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ReportModule } from './Report/report.module';
 import { StorageModule } from './Storage/storage.module';
-import { UserModule } from './User/user.module';
 import { AuthModule } from './Auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -23,7 +22,6 @@ import { ParserModule } from './Parser/parser.module';
     ReportModule,
     StorageModule,
     // TemperatureModule,
-    UserModule,
     AuthModule,
   ],
   controllers: [AppController],
