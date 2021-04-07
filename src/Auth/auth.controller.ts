@@ -2,8 +2,8 @@ import {
   BadRequestException,
   Body,
   ClassSerializerInterceptor,
-  Controller,
-  Post,
+  Controller, Get,
+  Post, Query,
   Req,
   UnauthorizedException,
   UseGuards,
@@ -51,4 +51,5 @@ export class AuthController {
     });
     return new User(newUser);
   }
+
 }

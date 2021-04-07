@@ -3,6 +3,8 @@ import { ParsebleFile, TypesFile } from '../../Typings/Modules/Storage';
 import { Document } from 'mongoose';
 import { ParseResultStatus } from '../../Typings/Modules/Parser';
 import { toArray } from '../../Utils/toArray.function';
+import * as mongoose from 'mongoose';
+import { User } from '../../Auth/Schemas/user.schema';
 
 @Schema({
   timestamps: true,
@@ -24,8 +26,10 @@ export class File extends Document implements ParsebleFile {
 
   @Prop({
     required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
   })
-  user: string;
+  user: User;
 
   @Prop({
     required: true,

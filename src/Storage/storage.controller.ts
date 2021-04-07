@@ -29,6 +29,8 @@ import { ParseResultStatus } from '../Typings/Modules/Parser';
 import { EventEmitter2 } from 'eventemitter2';
 import { FileUploadEvent } from './Events/fileUpload.event';
 import { File } from './Schemas/file.schema';
+import { ReqUser } from '../Utils/decorators/user.decorator';
+import { User } from '../Auth/Schemas/user.schema';
 
 @Controller('storage')
 @UseGuards(AuthGuard('jwt'))
@@ -42,11 +44,12 @@ export class StorageController {
   @Post('/upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFiles(
+    @ReqUser() user: User,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<BaseUploadFile> {
     if (!file) throw new BadRequestException('Файл не загружен');
     const newFile = await this.storageService.create({
-      user: 'root',
+      user: user._id,
       filename: file.filename,
       type: TypesFile.NoType,
       result: ParseResultStatus.Ready,
@@ -59,10 +62,7 @@ export class StorageController {
 
   @Post('/file')
   @UsePipes(new ValidationPipe({ transform: true }))
-  async updateFileInfo(
-    @Req() req: Express.Request,
-    @Body() dto: UpdateFileInfoDto,
-  ): Promise<ParsebleFile> {
+  async updateFileInfo(@Body() dto: UpdateFileInfoDto): Promise<ParsebleFile> {
     const fileStatus = await this.storageService.getFileStatus(dto._id);
     //TODO Отключено для тестирования
     // if (fileStatus !== ParseResultStatus.Ready)
