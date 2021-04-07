@@ -1,9 +1,9 @@
 import { WorkSheet } from 'xlsx';
 
-import { Value } from '../../Typings/Values';
+import { SomeValue } from '../../Typings/Values';
 
 interface IParserStrategy {
-  parse(sh: WorkSheet): Value[];
+  parse(sh: WorkSheet): SomeValue[];
 }
 
 export { IParserStrategy };

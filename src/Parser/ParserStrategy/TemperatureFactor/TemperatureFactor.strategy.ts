@@ -5,10 +5,10 @@ import { toArray } from '../../../Utils/toArray.function';
 import { XLSXHelper } from '../../../Utils/xlsx/XLSXHelper';
 import { IParserStrategy } from '../parserStrategy.interface';
 import {
-  ElectricityVolume,
+  Electricity,
   Temperature,
   TypesValue,
-  Value,
+  SomeValue,
 } from '../../../Typings/Values';
 import { RangeNumber } from '../../../Utils/range';
 import { getKeyByValue } from '../../../Utils/valueFromEnum.function';
@@ -40,11 +40,11 @@ export class TemperatureFactorStrategy
 
   private errors: Error[] = [];
 
-  parse(ws: WorkSheet): Value[] {
+  parse(ws: WorkSheet): SomeValue[] {
     this.ws = ws;
     const rangeOfYears = this.findRangeOfYear();
     this.calculateConstant(rangeOfYears);
-    const result: Value[] = [];
+    const result: SomeValue[] = [];
     const errorsParse: Error[] = [];
     for (const month of this.MONTHS) {
       try {
@@ -64,7 +64,7 @@ export class TemperatureFactorStrategy
               continue;
 
             const t: Temperature = {
-              type: TypesValue.Constant,
+              type: TypesValue.Temperature,
               description: 'Температура',
               department: Departments[getKeyByValue(Departments, department)],
               month: this.MONTHS.indexOf(month),
@@ -74,8 +74,7 @@ export class TemperatureFactorStrategy
                 c: addressYear.c + 1,
               }),
             };
-            const r: ElectricityVolume = {
-              filename: 'Из температурного режима',
+            const r: Electricity = {
               type: TypesValue.Reception,
               description: 'Отпуск в сеть',
               department: Departments[getKeyByValue(Departments, department)],

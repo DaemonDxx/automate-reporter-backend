@@ -6,7 +6,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { OnEvent } from '@nestjs/event-emitter';
 import { FileUploadEvent } from '../Storage/Events/fileUpload.event';
 import { ParseFailedEvent } from './Events/parseFailed.event';
-import { Value } from '../Typings/Values';
+import { SomeValue } from '../Typings/Values';
 import { ParseSuccessEvent } from './Events/parseSuccess.event';
 import { ParseResultStatus } from '../Typings/Modules/Parser';
 
@@ -28,7 +28,7 @@ export class ParserService {
       const wb: WorkBook = this.readBook(payload.buffer);
       const indexActiveSheet: number = this.getActiveSheetIndex(wb);
       const activeSheet: WorkSheet = wb.Sheets[wb.SheetNames[indexActiveSheet]];
-      const values: Value[] = this.strategyFactory
+      const values: SomeValue[] = this.strategyFactory
         .getStrategy(payload.type)
         .parse(activeSheet);
       this.events.emit(

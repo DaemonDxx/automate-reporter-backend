@@ -1,6 +1,6 @@
 import { EventParser$Success } from '../../Typings/Modules/Events/parser';
 import { ParseResultStatus } from '../../Typings/Modules/Parser';
-import { Value } from '../../Typings/Values';
+import { SomeValue } from '../../Typings/Values';
 import * as mongoose from 'mongoose';
 
 export class ParseSuccessEvent implements EventParser$Success {
@@ -11,7 +11,7 @@ export class ParseSuccessEvent implements EventParser$Success {
   }
   filename: string;
   result: ParseResultStatus.Success;
-  values: Value[];
+  values: SomeValue[];
   _id: mongoose.Schema.Types.ObjectId;
 
 }

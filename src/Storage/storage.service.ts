@@ -5,18 +5,13 @@ import * as fs from 'fs';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import { ParsebleFile, TypesFile } from '../Typings/Modules/Storage';
 import { MongooseCRUDService } from '../Utils/mongoose/MongooseCRUDService';
-import { File } from './Schemas/file.schema';
+import { ParsebleFile, TypesFile } from '../Typings/Modules/Storage';
 import { ParseResultStatus } from '../Typings/Modules/Parser';
-import { OnEvent } from '@nestjs/event-emitter';
 import { ParseFailedEvent } from '../Parser/Events/parseFailed.event';
-import { ParsedFile } from '../dbModels/WeeklyModels/file.schema';
 import { ParseSuccessEvent } from '../Parser/Events/parseSuccess.event';
-import {
-  EventParser$Failed,
-  EventParser$Success,
-} from '../Typings/Modules/Events/parser';
+import { OnEvent } from '@nestjs/event-emitter';
+import { File } from './Schemas/file.schema';
 
 @Injectable()
 export class StorageService extends MongooseCRUDService<ParsebleFile> {
@@ -57,7 +52,7 @@ export class StorageService extends MongooseCRUDService<ParsebleFile> {
 
   async getFileStatus(_id: string): Promise<ParseResultStatus> {
     const file: File = await this.FileModel.findById(_id);
-    return file.result;
+    return file?.result;
   }
 
   @OnEvent('parse.*', { async: true })

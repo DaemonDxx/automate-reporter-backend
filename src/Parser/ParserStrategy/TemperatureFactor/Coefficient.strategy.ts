@@ -1,6 +1,6 @@
 import { CellObject, utils, WorkSheet } from 'xlsx';
 import { IParserStrategy } from '../parserStrategy.interface';
-import { TemperatureCoefficient, TypesValue } from '../../../Typings/Values';
+import { Coefficient, TypesValue } from '../../../Typings/Values';
 import { XLSXHelper } from '../../../Utils/xlsx/XLSXHelper';
 import { toArray } from '../../../Utils/toArray.function';
 import { Departments } from '../../../Typings/departments';
@@ -25,9 +25,9 @@ export class CoefficientStrategy extends XLSXHelper implements IParserStrategy {
     super();
   }
 
-  parse(ws: WorkSheet): TemperatureCoefficient[] {
+  parse(ws: WorkSheet): Coefficient[] {
     this.ws = ws;
-    const result: TemperatureCoefficient[] = [];
+    const result: Coefficient[] = [];
     this.COLUMN_START_TAG = this.findStartTagColumn();
     for (const department of toArray(Departments)) {
       const rowDepartment: number = this.findRowDepartment(department);

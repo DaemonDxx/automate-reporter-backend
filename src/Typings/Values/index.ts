@@ -17,9 +17,6 @@ export type BaseValue = {
   type: TypesValue;
   description: string;
   v: number;
-};
-
-export type Dated = {
   year?: number;
   month?: number;
   day?: number;
@@ -30,16 +27,16 @@ export type Range = {
   maxTemp: number;
 };
 
-export interface Temperature extends BaseValue, Dated {
-  type: TypesValue.Constant;
+export interface Temperature extends BaseValue {
+  type: TypesValue.Temperature;
 }
 
-export interface ElectricityVolume extends BaseValue, Dated, ImportedFromFile {
+export interface Electricity extends BaseValue {
   type: TypesValue.Reception | TypesValue.Recoil;
 }
 
-export interface TemperatureCoefficient extends BaseValue, Range {
+export interface Coefficient extends BaseValue, Range {
   type: TypesValue.Constant;
 }
 
-export type Value = TemperatureCoefficient | ElectricityVolume | Temperature;
+export type SomeValue = Coefficient | Electricity | Temperature;

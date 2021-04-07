@@ -28,9 +28,9 @@ import { UpdateFileInfoDto } from './DTO/updateFileInfo.dto';
 import { ParseResultStatus } from '../Typings/Modules/Parser';
 import { EventEmitter2 } from 'eventemitter2';
 import { FileUploadEvent } from './Events/fileUpload.event';
-import { File } from './Schemas/file.schema';
 import { ReqUser } from '../Utils/decorators/user.decorator';
 import { User } from '../Auth/Schemas/user.schema';
+import { File } from './Schemas/file.schema';
 
 @Controller('storage')
 @UseGuards(AuthGuard('jwt'))
