@@ -1,5 +1,8 @@
-import { Departments } from '../departments';
+import { Departments } from '../../departments';
 import { type } from 'os';
+import { File } from '../../../Storage/Schemas/file.schema';
+import { User } from '../../../Auth/Schemas/user.schema';
+import mongoose from 'mongoose';
 
 export enum TypesValue {
   Reception = 'Reception',
@@ -7,10 +10,6 @@ export enum TypesValue {
   Constant = 'Constant',
   Temperature = 'Temperature',
 }
-
-export type ImportedFromFile = {
-  filename: string;
-};
 
 export type BaseValue = {
   department: Departments;
@@ -20,6 +19,8 @@ export type BaseValue = {
   year?: number;
   month?: number;
   day?: number;
+  fromFile?: mongoose.Schema.Types.ObjectId | string;
+  fromUser?: mongoose.Schema.Types.ObjectId | string;
 };
 
 export type Range = {

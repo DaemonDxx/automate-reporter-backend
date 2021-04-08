@@ -6,7 +6,7 @@ import { EventEmitter2 } from 'eventemitter2';
 import { OnEvent } from '@nestjs/event-emitter';
 import { FileUploadEvent } from '../Storage/Events/fileUpload.event';
 import { ParseFailedEvent } from './Events/parseFailed.event';
-import { SomeValue } from '../Typings/Values';
+import { SomeValue } from '../Typings/Modules/Values';
 import { ParseSuccessEvent } from './Events/parseSuccess.event';
 import { ParseResultStatus } from '../Typings/Modules/Parser';
 

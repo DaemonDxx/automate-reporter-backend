@@ -1,6 +1,6 @@
 import { CellObject, utils, WorkSheet } from 'xlsx';
 import { IParserStrategy } from '../parserStrategy.interface';
-import { Coefficient, TypesValue } from '../../../Typings/Values';
+import { Coefficient, TypesValue } from '../../../Typings/Modules/Values';
 import { XLSXHelper } from '../../../Utils/xlsx/XLSXHelper';
 import { toArray } from '../../../Utils/toArray.function';
 import { Departments } from '../../../Typings/departments';

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { ValueService } from './value.service';
 import { ValueController } from './value.controller';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -20,7 +20,7 @@ import {
       },
     ]),
   ],
-  providers: [ValueService],
+  providers: [ValueService, Logger],
   controllers: [ValueController],
 })
 export class ValueModule {}

@@ -1,5 +1,5 @@
 import { ParseResultStatus } from '../Parser';
-import { SomeValue } from '../../Values';
+import { SomeValue } from '../Values';
 import { ParsebleFile } from '../Storage';
 import { MongooseID } from '../../index';
 

@@ -9,7 +9,7 @@ import {
   Temperature,
   TypesValue,
   SomeValue,
-} from '../../../Typings/Values';
+} from '../../../Typings/Modules/Values';
 import { RangeNumber } from '../../../Utils/range';
 import { getKeyByValue } from '../../../Utils/valueFromEnum.function';
 

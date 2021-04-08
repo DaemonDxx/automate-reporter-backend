@@ -63,7 +63,7 @@ export class StorageService extends MongooseCRUDService<ParsebleFile> {
       file.parseErrors = event.parseErrors;
       this.logger.error('Ошибка парсинга файла');
     } else {
-      file.countValues = event.result.length;
+      file.countValues = event.values.length;
       this.logger.log('Файл успешно распарсен');
     }
     await file.save();

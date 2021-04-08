@@ -8,21 +8,26 @@ import {
 } from './schemas/coefficient.schema';
 import { OnEvent } from '@nestjs/event-emitter';
 import { ParseSuccessEvent } from '../Parser/Events/parseSuccess.event';
-import { SomeValue, TypesValue } from '../Typings/Values';
+import { SomeValue, TypesValue } from '../Typings/Modules/Values';
+import { ValueQuery } from '../Typings/Modules/Values/DTO/valueQuery';
+import { MongooseCRUDService } from '../Utils/mongoose/MongooseCRUDService';
 
 export type SomeValueModel = CoefficientValueModel | ValueModel;
 
 @Injectable()
-export class ValueService {
+export class ValueService extends MongooseCRUDService<SomeValueModel>{
   constructor(
     @InjectModel(Value.name)
-    private readonly Value: Model<ValueModel | CoefficientValueModel>,
-  ) {}
+    private readonly Value: Model<SomeValueModel>,
+  ) {
+    super(Value);
+  }
 
   @OnEvent(ParseSuccessEvent.Name, { async: true })
   async saveParsedValues(payload: ParseSuccessEvent) {
     const promises: Promise<SomeValueModel>[] = payload.values.map((el) => {
       const query = Object.assign({}, el);
+      Object.assign(el, { fromFile: payload._id });
       delete query.v;
       return this.Value.findOneAndUpdate(query, el, {
         upsert: true,
@@ -33,11 +38,4 @@ export class ValueService {
     console.table(result.map((el) => el.toObject()));
   }
 
-  private transformToModel(values: SomeValue[]): SomeValueModel[] {
-    const result: SomeValueModel[] = [];
-    for (const item of values) {
-      result.push(new this.Value(item));
-    }
-    return result;
-  }
 }

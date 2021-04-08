@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Coefficient, TypesValue } from '../../Typings/Values';
+import { Coefficient, TypesValue } from '../../Typings/Modules/Values';
 import { Departments } from '../../Typings/departments';
 import { Document } from 'mongoose';
 

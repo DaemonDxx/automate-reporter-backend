@@ -1,4 +1,4 @@
-import { SomeValue } from '../../Values';
+import { SomeValue } from '../Values';
 import { WorkSheet } from 'xlsx';
 
 export type Parser = {

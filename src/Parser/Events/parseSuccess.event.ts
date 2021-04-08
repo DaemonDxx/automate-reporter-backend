@@ -1,6 +1,6 @@
 import { EventParser$Success } from '../../Typings/Modules/Events/parser';
 import { ParseResultStatus } from '../../Typings/Modules/Parser';
-import { SomeValue } from '../../Typings/Values';
+import { SomeValue } from '../../Typings/Modules/Values';
 import * as mongoose from 'mongoose';
 
 export class ParseSuccessEvent implements EventParser$Success {
