@@ -9,7 +9,6 @@ export type UserModel = User & Document;
 
 @Schema()
 export class User implements UserInfo {
-
   constructor(user: UserModel) {
     this._id = user._id.toString();
     this.role = user.role;
@@ -36,7 +35,6 @@ export class User implements UserInfo {
     default: Roles.VIEWER,
   })
   role: Roles;
-
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -13,4 +13,3 @@ export type UserInfo = {
   password: string;
   role: Roles;
 };
-

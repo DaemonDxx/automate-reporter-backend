@@ -15,7 +15,7 @@ import { MongooseCRUDService } from '../../utils/mongoose/MongooseCRUDService';
 export type SomeValueModel = CoefficientValueModel | ValueModel;
 
 @Injectable()
-export class ValueService extends MongooseCRUDService<SomeValueModel>{
+export class ValueService extends MongooseCRUDService<SomeValueModel> {
   constructor(
     @InjectModel(Value.name)
     private readonly Value: Model<SomeValueModel>,
@@ -37,5 +37,4 @@ export class ValueService extends MongooseCRUDService<SomeValueModel>{
     const result: SomeValueModel[] = await Promise.all(promises);
     console.table(result.map((el) => el.toObject()));
   }
-
 }

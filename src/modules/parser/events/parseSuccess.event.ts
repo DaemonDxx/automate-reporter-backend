@@ -13,5 +13,4 @@ export class ParseSuccessEvent implements EventParser$Success {
   result: ParseResultStatus.Success;
   values: SomeValue[];
   _id: mongoose.Schema.Types.ObjectId;
-
 }

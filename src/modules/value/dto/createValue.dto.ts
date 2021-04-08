@@ -1,7 +1,17 @@
 import { BaseValue, TypesValue } from '../../../typings/modules/values';
 import { Departments } from '../../../typings/departments';
 import * as mongoose from 'mongoose';
-import { IsDefined, IsEnum, IsMongoId, IsNumber, IsOptional, IsString, Max, Min, MIN } from 'class-validator';
+import {
+  IsDefined,
+  IsEnum,
+  IsMongoId,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  MIN,
+} from 'class-validator';
 import { toArray } from '../../../utils/toArray.function';
 import { Transform } from 'class-transformer';
 
