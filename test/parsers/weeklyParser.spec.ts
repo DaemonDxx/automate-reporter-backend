@@ -1,7 +1,7 @@
-import { ParserService } from '../../src/Parser/parser.service';
+import { ParserService } from '../../src/modules/parser/parser.service';
 import * as fs from 'fs';
-import { TYPES_REPORT } from '../../src/Utils/typesReport.constant';
-import { IResultParsing } from '../../src/Parser/resultParsing.interface';
+import { TYPES_REPORT } from '../../src/utils/typesReport.constant';
+import { IResultParsing } from '../../src/modules/parser/resultParsing.interface';
 import * as path from 'path';
 
 const META_OF_DEPARTMENT = {

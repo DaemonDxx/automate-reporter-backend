@@ -2,13 +2,13 @@ import { Logger, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ReportModule } from './Report/report.module';
-import { StorageModule } from './Storage/storage.module';
-import { AuthModule } from './Auth/auth.module';
+import { ReportModule } from './modules/report/report.module';
+import { StorageModule } from './modules/storage/storage.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
-import { ParserModule } from './Parser/parser.module';
-import { ValueModule } from './value/value.module';
+import { ParserModule } from './modules/parser/parser.module';
+import { ValueModule } from './modules/value/value.module';
 
 @Module({
   imports: [
