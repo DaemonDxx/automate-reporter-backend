@@ -2,10 +2,12 @@ import {
   BadRequestException,
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Logger,
   LoggerService,
+  Param,
   Post,
   Put,
   Query,
@@ -65,5 +67,14 @@ export class ValueController {
     this.logger.log(`Обновлено значение`);
     this.logger.log(value.toObject());
     return value;
+  }
+
+  //TODO Протестировать метод
+  @Delete(':_id')
+  async deleteValue(@Param('_id') id: string): Promise<boolean> {
+    const value = await this.valueService.findByID(id);
+    if (!value) new BadRequestException('Данного значения не существует');
+    await value.delete();
+    return true;
   }
 }
