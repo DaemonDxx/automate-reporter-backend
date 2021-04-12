@@ -14,25 +14,30 @@ import {
 } from 'class-validator';
 import { toArray } from '../../../utils/toArray.function';
 import { Transform } from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateValueDto
   implements Omit<BaseValue, 'fromFile' | 'fromUser'> {
+  @ApiProperty()
   @IsDefined()
   @IsEnum(toArray(Departments), {
     message: 'Выбранного филиала не сущестует',
   })
   department: Departments;
 
+  @ApiProperty()
   @IsDefined()
   @IsString()
   description: string;
 
+  @ApiProperty()
   @IsDefined()
   @IsEnum(toArray(TypesValue), {
     message: 'Данный тип значений не поддерживается',
   })
   type: TypesValue;
 
+  @ApiProperty()
   @IsDefined()
   @IsNumber()
   @Transform(({ value }) => {
@@ -40,6 +45,7 @@ export class CreateValueDto
   })
   v: number;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @Min(2010)
@@ -49,6 +55,7 @@ export class CreateValueDto
   })
   year?: number;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @Min(0)
@@ -58,6 +65,7 @@ export class CreateValueDto
   })
   month?: number;
 
+  @ApiPropertyOptional()
   @IsOptional()
   @IsNumber()
   @Min(1)

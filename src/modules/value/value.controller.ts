@@ -24,6 +24,8 @@ import { UpdateValueDto } from './dto/updateValue.dto';
 import { User } from '../auth/schemas/user.schema';
 import { AuthGuard } from '@nestjs/passport';
 import { ReqUser } from '../../utils/decorators/user.decorator';
+import { QueryDto } from './dto/query.dto';
+import { ApiQuery } from '@nestjs/swagger';
 
 @Controller('value')
 @UseGuards(AuthGuard('jwt'))
@@ -33,8 +35,9 @@ export class ValueController {
     @Inject(Logger) private readonly logger: LoggerService,
   ) {}
 
+
   @Get()
-  async getValueByQuery(@Query() query: ValueQuery): Promise<SomeValueModel[]> {
+  async getValueByQuery(@Query() query: QueryDto): Promise<SomeValueModel[]> {
     const result = await this.valueService.find(query);
     return result;
   }
