@@ -9,6 +9,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ParserModule } from './modules/parser/parser.module';
 import { ValueModule } from './modules/value/value.module';
+import { IncidentModule } from './modules/incident/incident.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ValueModule } from './modules/value/value.module';
     // TemperatureModule,
     AuthModule,
     ValueModule,
+    IncidentModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],

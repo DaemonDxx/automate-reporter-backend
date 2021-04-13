@@ -38,6 +38,7 @@
     "eventemitter2": "^6.4.3",
     "exceljs": "^4.2.0",
     "mongoose": "^5.11.14",
+    "mongoose-autopopulate": "^0.12.3",
     "nest-winston": "^1.4.0",
     "object-hash": "^2.1.1",
     "passport": "^0.4.1",
