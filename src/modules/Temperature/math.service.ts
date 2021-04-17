@@ -7,8 +7,8 @@ import { FullMonthAlgorithm } from './Math/full.month.algorithm';
 import { DataForAlgorithm } from './Math/interfaces/dataForAlgorithm.interface';
 import { Offset } from './Math/interfaces/offset.interface';
 import { CountResult } from './Math/interfaces/countResult.interface';
-import { toArray } from '../../../utils/toArray.function';
-import { Departments } from '../../../typings/departments';
+import { toArray } from '../../utils/toArray.function';
+import { Departments } from '../../typings/departments';
 
 @Injectable()
 export class MathService {

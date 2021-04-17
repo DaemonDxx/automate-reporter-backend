@@ -10,6 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ParserModule } from './modules/parser/parser.module';
 import { ValueModule } from './modules/value/value.module';
 import { IncidentModule } from './modules/incident/incident.module';
+import { MathModule } from './modules/math/math.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { IncidentModule } from './modules/incident/incident.module';
     AuthModule,
     ValueModule,
     IncidentModule,
+    MathModule,
   ],
   controllers: [AppController],
   providers: [AppService, Logger],

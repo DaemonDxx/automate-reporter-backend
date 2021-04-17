@@ -85,8 +85,8 @@ export class StorageController {
     return updatedFile;
   }
 
-  @Get(':id')
-  async getFileInfo(@Query('id') id: string): Promise<File> {
+  @Get('/file/:id')
+  async getFileInfo(@Param('id') id: string): Promise<File> {
     const file: File = await this.storageService.findByID(id);
     return file;
   }

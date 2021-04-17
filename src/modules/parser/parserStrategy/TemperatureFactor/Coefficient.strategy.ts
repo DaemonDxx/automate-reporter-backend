@@ -5,6 +5,7 @@ import { XLSXHelper } from '../../../../utils/xlsx/XLSXHelper';
 import { toArray } from '../../../../utils/toArray.function';
 import { Departments } from '../../../../typings/departments';
 import { getKeyByValue } from '../../../../utils/valueFromEnum.function';
+import { ParseFailedError } from '../../../../utils/Errors/ParseFailed.error';
 
 export class CoefficientStrategy extends XLSXHelper implements IParserStrategy {
   OFFSET_ROW_MIN_TEMP = 0;
@@ -64,6 +65,7 @@ export class CoefficientStrategy extends XLSXHelper implements IParserStrategy {
         }
       }
     }
+    if (this.errors.length > 0) throw new ParseFailedError(this.errors);
     console.table(result);
     return result;
   }

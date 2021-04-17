@@ -9,7 +9,7 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
-  UseInterceptors,
+  UseInterceptors, UsePipes, ValidationPipe,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
@@ -19,6 +19,7 @@ import { CreateUserDTO } from './dto/createUser.dto';
 import { User, UserModel } from './schemas/user.schema';
 import { Roles } from '../../typings/modules/auth/user';
 import { JWTToken } from '../../typings/modules/auth';
+import { REGISTRATION_KEYS } from './utils/regKey.constant';
 
 @Controller('/auth')
 @UseInterceptors(LoggingInterceptor)
@@ -35,6 +36,7 @@ export class AuthController {
   }
 
   @Post('/registration')
+  @UsePipes(ValidationPipe)
   @UseInterceptors(ClassSerializerInterceptor)
   async newUser(@Body() dto: CreateUserDTO): Promise<User> {
     const role: Roles = this.userService.validateKey(dto.key);

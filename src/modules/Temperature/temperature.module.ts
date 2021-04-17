@@ -3,7 +3,7 @@ import { TemperatureController } from './temperature.controller';
 import { TemperatureService } from './temperature.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ForTemperatureValueSchema } from './Models/forTemperature.value';
-import { StorageModule } from '../../storage/storage.module';
+import { StorageModule } from '../storage/storage.module';
 import { CoefficientSchema } from './Models/coefficient';
 import { MathService } from './math.service';
 

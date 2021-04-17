@@ -91,7 +91,7 @@ export class TemperatureFactorStrategy
       }
     }
     console.table(result);
-    if (errorsParse.length > 0) throw new ParseFailedError(errorsParse);
+    if (this.errors.length > 0) throw new ParseFailedError(this.errors);
     return result;
   }
 

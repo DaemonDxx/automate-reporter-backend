@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger, LoggerService } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { ForTemperatureValue } from './Models/forTemperature.value';
 import { Model } from 'mongoose';
-import { StorageService } from '../../storage/storage.service';
+import { StorageService } from '../storage/storage.service';
 import { TValue } from './Models/TValue.interface';
 import { Coefficient } from './Models/coefficient';
 

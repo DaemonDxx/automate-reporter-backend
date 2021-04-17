@@ -19,7 +19,7 @@ import { MathService } from './math.service';
 import { CountResult } from './Math/interfaces/countResult.interface';
 import { ForTemperatureValue } from './Models/forTemperature.value';
 import { AuthGuard } from '@nestjs/passport';
-import { LoggingInterceptor } from '../../../utils/logging.interceptor';
+import { LoggingInterceptor } from '../../utils/logging.interceptor';
 import { CreateValueDTO } from './DTO/CreateValue.dto';
 import { TValue } from './Models/TValue.interface';
 
@@ -32,32 +32,6 @@ export class TemperatureController {
     private readonly temperatureService: TemperatureService,
     private readonly mathService: MathService,
   ) {}
-
-  @Post('/file')
-  async parseValueFromFile(
-    @Body() parseDTO: ParseFromFileDTO,
-  ): Promise<SaveValuesStatistic> {
-    try {
-      return null;
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
-  }
-
-  @Post('/coefficient/file')
-  async parseCoefficientFromFile(
-    @Body('filename') filename: string,
-  ): Promise<string[]> {
-    // const result: Map<
-    //   string,
-    //   number
-    // > = await this.temperatureService.parseCoefficientFromFile(filename);
-    const arr: string[] = [];
-    // for (const [key, value] of result.entries()) {
-    //   arr.push(`${key}: ${value}`);
-    // }
-    return arr;
-  }
 
   @Get('/offset')
   async getTemperatureOffset(@Query() params): Promise<CountResult[]> {
