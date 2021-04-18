@@ -27,57 +27,57 @@ import { TValue } from './Models/TValue.interface';
 @UseGuards(AuthGuard('jwt'))
 @UseInterceptors(LoggingInterceptor)
 export class TemperatureController {
-  constructor(
-    @Inject(Logger) private readonly logger: LoggerService,
-    private readonly temperatureService: TemperatureService,
-    private readonly mathService: MathService,
-  ) {}
-
-  @Get('/offset')
-  async getTemperatureOffset(@Query() params): Promise<CountResult[]> {
-    const year1 = parseInt(params.year1);
-    const year2 = parseInt(params.year2);
-    const result: CountResult[] = await this.mathService.countOffset(
-      year1,
-      year2,
-    );
-    return result;
-  }
-
-  @Get('/year')
-  async getAccessYears(): Promise<number[]> {
-    return this.temperatureService.getAccessYears();
-  }
-
-  @Get()
-  async getValue(
-    @Query('year') year: number,
-    @Query('month') month: number,
-  ): Promise<ForTemperatureValue[]> {
-    const result = await this.temperatureService.getValue(year, month);
-    return result;
-  }
-
-  @Post()
-  async createValue(@Body() value: TValue): Promise<ForTemperatureValue> {
-    const createdValue: ForTemperatureValue = await this.temperatureService.createValue(
-      value,
-      true,
-    );
-    return createdValue;
-  }
-
-  @Put()
-  async updateValueForMonth(
-    @Body() value: TValue,
-  ): Promise<ForTemperatureValue> {
-    try {
-      const updatedValue: ForTemperatureValue = await this.temperatureService.updateValue(
-        value,
-      );
-      return updatedValue;
-    } catch (e) {
-      throw new BadRequestException(e.message);
-    }
-  }
+  // constructor(
+  //   @Inject(Logger) private readonly logger: LoggerService,
+  //   private readonly temperatureService: TemperatureService,
+  //   private readonly mathService: MathService,
+  // ) {}
+  //
+  // @Get('/offset')
+  // async getTemperatureOffset(@Query() params): Promise<CountResult[]> {
+  //   const year1 = parseInt(params.year1);
+  //   const year2 = parseInt(params.year2);
+  //   const result: CountResult[] = await this.mathService.countOffset(
+  //     year1,
+  //     year2,
+  //   );
+  //   return result;
+  // }
+  //
+  // @Get('/year')
+  // async getAccessYears(): Promise<number[]> {
+  //   return this.temperatureService.getAccessYears();
+  // }
+  //
+  // @Get()
+  // async getValue(
+  //   @Query('year') year: number,
+  //   @Query('month') month: number,
+  // ): Promise<ForTemperatureValue[]> {
+  //   const result = await this.temperatureService.getValue(year, month);
+  //   return result;
+  // }
+  //
+  // @Post()
+  // async createValue(@Body() value: TValue): Promise<ForTemperatureValue> {
+  //   const createdValue: ForTemperatureValue = await this.temperatureService.createValue(
+  //     value,
+  //     true,
+  //   );
+  //   return createdValue;
+  // }
+  //
+  // @Put()
+  // async updateValueForMonth(
+  //   @Body() value: TValue,
+  // ): Promise<ForTemperatureValue> {
+  //   try {
+  //     const updatedValue: ForTemperatureValue = await this.temperatureService.updateValue(
+  //       value,
+  //     );
+  //     return updatedValue;
+  //   } catch (e) {
+  //     throw new BadRequestException(e.message);
+  //   }
+  // }
 }
