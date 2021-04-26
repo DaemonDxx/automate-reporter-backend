@@ -1,6 +1,9 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { BadRequestException, Controller, Get, Query } from '@nestjs/common';
 import { MathService } from './math.service';
-import { Query$OffsetsByYear, Query$PersonalOffset } from '../../typings/modules/math/offset.personal';
+import {
+  Query$OffsetsByYear,
+  Query$PersonalOffset,
+} from '../../typings/modules/math/offset.personal';
 import { Offset } from '../../typings/modules/math/offset';
 
 @Controller('math')
@@ -35,7 +38,12 @@ export class MathController {
   }
 
   @Get('/offset')
-  async solveOffsetsByYear(query: Query$OffsetsByYear): Promise<Offset> {
-    const offsets: Offset[] =
+  async solveOffsetsByYear(@Query() query: Query$OffsetsByYear): Promise<Offset[]> {
+    try {
+      const offsets: Offset[] = await this.mathService.getOffsets(query);
+      return offsets;
+    } catch (e) {
+      throw new BadRequestException(e.message);
+    }
   }
 }

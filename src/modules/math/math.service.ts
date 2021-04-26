@@ -3,11 +3,23 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Value } from '../value/schemas/value.schema';
 import { Model } from 'mongoose';
 import { SomeValueModel } from '../value/value.service';
-import { Data$OffsetSolver, Query$OffsetsByYear } from '../../typings/modules/math/offset.personal';
-import { Coefficient, Temperature, TypesValue } from '../../typings/modules/values';
+import {
+  Data$OffsetSolver,
+  Query$OffsetsByYear,
+} from '../../typings/modules/math/offset.personal';
+import {
+  Coefficient,
+  Electricity,
+  TypesValue,
+} from '../../typings/modules/values';
 import { Departments } from '../../typings/departments';
-import { FilteredDataByMonth, FilteredDataByYear, Offset } from '../../typings/modules/math/offset';
+import {
+  ComparedData,
+  Offset,
+  PreparedData,
+} from '../../typings/modules/math/offset';
 import { FullMonthAlgorithm } from './full.month.algorithm';
+import { of } from 'rxjs';
 
 @Injectable()
 export class MathService {
@@ -15,70 +27,114 @@ export class MathService {
     @InjectModel(Value.name) private readonly Value: Model<SomeValueModel>,
   ) {}
 
-  async solveOffsetsByYear({
+  private async prepareData(
+    reception: Electricity,
     yearBefore,
     yearNow,
-  }: Query$OffsetsByYear): Promise<Offset> {
-    const values: SomeValueModel[] = await this.Value.find({
-      type: {
-        $in: [TypesValue.Temperature, TypesValue.Reception],
-      },
-      year: {
-        $in: [yearBefore, yearNow],
-      },
-    });
-    const coefficients = await this.getCoefficientsByTemperature(
-      values.filter(
-        (item) => item.type === TypesValue.Temperature,
-      ) as Temperature[],
-    );
-    const;
-  }
+  ): Promise<Offset> {
+    const offset: Partial<Offset> = {};
+    offset.month = reception.month;
+    offset.department = reception.department;
+    offset.receptionBefore = reception.v;
 
-  private async preparationData({
-    yearBefore,
-    yearNow,
-  }: Query$OffsetsByYear): Promise<SomeValueModel[]> {
-
-    const temperature: SomeValueModel[] = await this.Value.find({
+    const tempBefore = await this.Value.findOne({
       type: TypesValue.Temperature,
-      year: {
-        $in: [yearBefore, yearNow],
+      year: yearBefore,
+      month: reception.month,
+    });
+
+    if (!tempBefore)
+      throw new Error(`Нет данных о температуре за ${yearBefore} год`);
+
+    const tempNow = await this.Value.findOne({
+      type: TypesValue.Temperature,
+      year: yearNow,
+      month: reception.month,
+    });
+
+    if (!tempNow) throw new Error(`Нет данных о температуре за ${yearNow} год`);
+
+    const coefficientBefore = await this.Value.findOne({
+      type: TypesValue.Constant,
+      maxTemp: {
+        $gte: tempBefore.v,
+      },
+      minTemp: {
+        $lt: tempBefore.v,
       },
     });
-    const : Partial<Data$OffsetSolver> = await this.getCoefficientsByTemperature(
-      temperature as Temperature[],
+
+    if (!coefficientBefore)
+      throw new Error(
+        `Не найден коэффициент для температуры ${tempBefore} для филиала ${reception.department}`,
+      );
+
+    const coefficientNow = await this.Value.findOne({
+      type: TypesValue.Constant,
+      maxTemp: {
+        $gte: tempNow.v,
+      },
+      minTemp: {
+        $lt: tempNow.v,
+      },
+    });
+
+    if (!coefficientNow)
+      throw new Error(
+        `Не найден коэффициент для температуры ${tempNow} для филиала ${reception.department}`,
+      );
+
+    const receptionNow = await this.Value.findOne({
+      type: TypesValue.Reception,
+      year: yearNow,
+      month: reception.month,
+    });
+
+    if (!receptionNow)
+      throw new Error(
+        `Не найден отпуск в сеть за ${offset.month} месяц для филиала ${reception.department}`,
+      );
+
+    offset.offset = this.solveOffset(
+      {
+        coefficient: coefficientBefore as Coefficient,
+        reception: reception.v,
+        temperature: tempBefore.v,
+      },
+      {
+        coefficient: coefficientNow as Coefficient,
+        reception: receptionNow.v,
+        temperature: tempNow.v,
+      },
     );
-    return [...values, ...coefficients];
+
+    offset.receptionNow = receptionNow.v;
+    offset.temperatureNow = tempNow.v;
+    offset.temperatureBefore = tempBefore.v;
+
+    return offset as Offset;
   }
 
+  async getOffsets({
+    yearBefore,
+    yearNow,
+  }: Query$OffsetsByYear): Promise<Offset[]> {
+    const receptionBefore: SomeValueModel[] = await this.Value.find({
+      type: TypesValue.Reception,
+      year: yearBefore,
+    });
 
-  private async getCoefficientsByTemperature(
-    values: Temperature[],
-  ): Promise<Partial<Data$OffsetSolver>> {
-    const result: Promise<Partial<Data$OffsetSolver>>[] = [];
-    for (const temperature of values) {
-        this.Value.findOne({
-          department: temperature.department,
-          type: TypesValue.Constant,
-          maxTemp: {
-            $gte: temperature.v,
-          },
-          minTemp: {
-            $lt: temperature.v,
-          },
-        }).then((coefficient) => {
+    if (receptionBefore.length === 0)
+      throw new Error('Отсутствуют данные по за данный период');
 
-        });
+    const result: Promise<Offset>[] = [];
+
+    for (const reception of receptionBefore) {
+      result.push(
+        this.prepareData(reception as Electricity, yearBefore, yearNow),
+      );
     }
-    return Promise.all(result);
-  }
-
-  private filterValue(values: SomeValueModel[]): FilteredDataByYear {
-    const result: FilteredDataByYear = new Map<number, FilteredDataByMonth>();
-    for (const item of values) {
-      if (result.has(item.))
-    }
+    return await Promise.all(result);
   }
 
   solveOffset(before: Data$OffsetSolver, now: Data$OffsetSolver): number {

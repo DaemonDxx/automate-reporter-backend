@@ -28,6 +28,7 @@ export class CoefficientStrategy extends XLSXHelper implements IParserStrategy {
 
   parse(ws: WorkSheet): Coefficient[] {
     this.ws = ws;
+    this.errors = [];
     const result: Coefficient[] = [];
     this.COLUMN_START_TAG = this.findStartTagColumn();
     for (const department of toArray(Departments)) {

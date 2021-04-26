@@ -12,5 +12,10 @@ export type Offset = {
   offset: number;
 };
 
-export type FilteredDataByMonth = Map<number, Partial<Data$OffsetSolver>>;
-export type FilteredDataByYear = Map<number, FilteredDataByMonth>;
+export type ComparedData = {
+  before?: Data$OffsetSolver;
+  now?: Data$OffsetSolver;
+};
+
+export type PreparedData = Map<number, ComparedData>;
+
