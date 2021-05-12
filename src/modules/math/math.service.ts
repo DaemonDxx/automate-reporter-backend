@@ -27,6 +27,29 @@ export class MathService {
     @InjectModel(Value.name) private readonly Value: Model<SomeValueModel>,
   ) {}
 
+  async getOffsets({
+    yearBefore,
+    yearNow,
+  }: Query$OffsetsByYear): Promise<Offset[]> {
+    const receptionBefore: SomeValueModel[] = await this.Value.find({
+      type: TypesValue.Reception,
+      year: yearBefore,
+    });
+
+    if (receptionBefore.length === 0)
+      throw new Error('Отсутствуют данные по за данный период');
+
+    const result: Promise<Offset>[] = [];
+
+    for (const reception of receptionBefore) {
+      result.push(
+        this.prepareData(reception as Electricity, yearBefore, yearNow),
+      );
+    }
+    console.log(await Promise.all(result));
+    return await Promise.all(result);
+  }
+
   private async prepareData(
     reception: Electricity,
     yearBefore,
@@ -38,6 +61,7 @@ export class MathService {
     offset.receptionBefore = reception.v;
 
     const tempBefore = await this.Value.findOne({
+      department: reception.department,
       type: TypesValue.Temperature,
       year: yearBefore,
       month: reception.month,
@@ -47,6 +71,7 @@ export class MathService {
       throw new Error(`Нет данных о температуре за ${yearBefore} год`);
 
     const tempNow = await this.Value.findOne({
+      department: reception.department,
       type: TypesValue.Temperature,
       year: yearNow,
       month: reception.month,
@@ -55,6 +80,7 @@ export class MathService {
     if (!tempNow) throw new Error(`Нет данных о температуре за ${yearNow} год`);
 
     const coefficientBefore = await this.Value.findOne({
+      department: reception.department,
       type: TypesValue.Constant,
       maxTemp: {
         $gte: tempBefore.v,
@@ -70,6 +96,7 @@ export class MathService {
       );
 
     const coefficientNow = await this.Value.findOne({
+      department: reception.department,
       type: TypesValue.Constant,
       maxTemp: {
         $gte: tempNow.v,
@@ -85,6 +112,7 @@ export class MathService {
       );
 
     const receptionNow = await this.Value.findOne({
+      department: reception.department,
       type: TypesValue.Reception,
       year: yearNow,
       month: reception.month,
@@ -113,28 +141,6 @@ export class MathService {
     offset.temperatureBefore = tempBefore.v;
 
     return offset as Offset;
-  }
-
-  async getOffsets({
-    yearBefore,
-    yearNow,
-  }: Query$OffsetsByYear): Promise<Offset[]> {
-    const receptionBefore: SomeValueModel[] = await this.Value.find({
-      type: TypesValue.Reception,
-      year: yearBefore,
-    });
-
-    if (receptionBefore.length === 0)
-      throw new Error('Отсутствуют данные по за данный период');
-
-    const result: Promise<Offset>[] = [];
-
-    for (const reception of receptionBefore) {
-      result.push(
-        this.prepareData(reception as Electricity, yearBefore, yearNow),
-      );
-    }
-    return await Promise.all(result);
   }
 
   solveOffset(before: Data$OffsetSolver, now: Data$OffsetSolver): number {
