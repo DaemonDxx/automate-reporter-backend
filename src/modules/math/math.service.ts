@@ -46,7 +46,6 @@ export class MathService {
         this.prepareData(reception as Electricity, yearBefore, yearNow),
       );
     }
-    console.log(await Promise.all(result));
     return await Promise.all(result);
   }
 
