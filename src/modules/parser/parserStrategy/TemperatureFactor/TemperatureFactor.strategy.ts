@@ -50,10 +50,27 @@ export class TemperatureFactorStrategy
       try {
         const rangeMonth: Range = this.findRangeWithMonth(month);
         for (const department of Object.values(Departments)) {
-          const rowDepartment: number = this.findRowByDepartment(
-            department,
-            rangeMonth.s.r,
-          );
+          const findResult = this.findCellsWithValue(department, {
+            range: {
+              s: {
+                c: 0,
+                r: rangeMonth.s.r,
+              },
+              e: {
+                c: 0,
+                r: rangeMonth.s.r + this.HEIGHT_OFFSET_IN_MONTH,
+              },
+            },
+          }).next();
+          let rowDepartment;
+          if (findResult.value) {
+            rowDepartment = findResult.value.address.r;
+          } else {
+            throw new Error(
+              `Не найден филиал ${department}, месяц ${month}, начиная от строчки ${rangeMonth.s.r}`,
+            );
+          }
+
           for (const year of rangeOfYears) {
             const addressYear: CellAddress = this.findCellWithYear(
               year,
@@ -90,7 +107,7 @@ export class TemperatureFactorStrategy
         this.errors.push(e);
       }
     }
-    console.table(result);
+    console.log(`Итого значений ${result.length}`);
     if (this.errors.length > 0) throw new ParseFailedError(this.errors);
     return result;
   }

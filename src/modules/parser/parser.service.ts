@@ -23,7 +23,6 @@ export class ParserService {
 
   @OnEvent(FileUploadEvent.Name, { async: true })
   parse(payload: FileUploadEvent) {
-    this.logger.log('FileUploadEvent');
     try {
       const wb: WorkBook = this.readBook(payload.buffer);
       const indexActiveSheet: number = this.getActiveSheetIndex(wb);

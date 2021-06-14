@@ -36,6 +36,5 @@ export class ValueService extends MongooseCRUDService<SomeValueModel> {
       }).exec();
     });
     const result: SomeValueModel[] = await Promise.all(promises);
-    console.table(result.map((el) => el.toObject()));
   }
 }
