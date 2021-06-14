@@ -10,6 +10,7 @@ import {
   Post,
   Query,
   Req,
+  Res,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -64,11 +65,10 @@ export class StorageController {
   @UsePipes(new ValidationPipe({ transform: true }))
   async updateFileInfo(@Body() dto: UpdateFileInfoDto): Promise<ParsebleFile> {
     const fileStatus = await this.storageService.getFileStatus(dto._id);
-    //TODO Отключено для тестирования
-    // if (fileStatus !== ParseResultStatus.Ready)
-    //   throw new BadRequestException(
-    //     'Информацию о файле невозможно обновить более одного раза',
-    //   );
+    if (fileStatus !== ParseResultStatus.Ready)
+      throw new BadRequestException(
+        'Информацию о файле невозможно обновить более одного раза',
+      );
     const updatedFile = await this.storageService.update(dto);
     const buff: Buffer = await this.storageService.getBufferOfFile(
       updatedFile.filename,
@@ -89,5 +89,14 @@ export class StorageController {
   async getFileInfo(@Param('id') id: string): Promise<File> {
     const file: File = await this.storageService.findByID(id);
     return file;
+  }
+
+  @Get('/:filename')
+  async downloadFile(
+    @Param('filename') filename: string,
+  ): Promise<Uint8Array> {
+    const buffer = await this.storageService.getBufferOfFile(filename);
+    const uintArray = new Uint8Array(buffer);
+    return uintArray;
   }
 }

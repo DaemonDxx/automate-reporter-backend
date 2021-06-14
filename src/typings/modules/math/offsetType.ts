@@ -2,9 +2,9 @@ import { Departments } from '../../departments';
 import { SomeValue } from '../values';
 import { Data$OffsetSolver } from './offset.personal';
 
-export type Offset = {
+export type OffsetType = {
   department: Departments;
-  month: number;
+  month: number | string;
   receptionBefore: number;
   receptionNow: number;
   temperatureBefore: number;

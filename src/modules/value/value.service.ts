@@ -12,6 +12,7 @@ import { SomeValue, TypesValue } from '../../typings/modules/values';
 import { ValueQuery } from '../../typings/modules/values/DTO/valueQuery';
 import { MongooseCRUDService } from '../../utils/mongoose/MongooseCRUDService';
 
+
 export type SomeValueModel = CoefficientValueModel | ValueModel;
 
 @Injectable()

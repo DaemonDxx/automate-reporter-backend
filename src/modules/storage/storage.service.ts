@@ -22,12 +22,12 @@ export class StorageService extends MongooseCRUDService<ParsebleFile> {
     @Inject(Logger) private readonly logger: LoggerService,
   ) {
     super(FileModel);
-    this.__dirname = dirname(__dirname);
+    this.__dirname = dirname(__dirname.replace('modules/storage', ''));
   }
 
   async getBufferOfFile(
     filename: string,
-    dir = 'uploads',
+    dir = 'temp',
   ): Promise<Buffer | null> {
     try {
       const fullPath: string = join(this.__dirname, dir, filename);
@@ -39,15 +39,15 @@ export class StorageService extends MongooseCRUDService<ParsebleFile> {
     }
   }
 
-  //Todo Сделать обработку ошибок
-  async saveFile(
-    filename: string,
-    buffer: Buffer,
-    dir = 'uploads',
-  ): Promise<boolean> {
-    const fullPath: string = join(this.__dirname, dir, filename);
-    await fs.promises.writeFile(fullPath, buffer);
-    return true;
+  async saveFile(filename: string, buffer: Uint8Array): Promise<string | null> {
+    try {
+      const fullPath: string = join(this.__dirname, 'temp', filename);
+      await fs.promises.writeFile(fullPath, buffer);
+      return filename;
+    } catch (e) {
+      console.error(e);
+      return null;
+    }
   }
 
   async getFileStatus(_id: string): Promise<ParseResultStatus> {

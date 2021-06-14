@@ -4,7 +4,7 @@ import {
   Query$OffsetsByYear,
   Query$PersonalOffset,
 } from '../../typings/modules/math/offset.personal';
-import { Offset } from '../../typings/modules/math/offset';
+import { OffsetType } from '../../typings/modules/math/offsetType';
 
 @Controller('math')
 export class MathController {
@@ -38,9 +38,9 @@ export class MathController {
   }
 
   @Get('/offset')
-  async solveOffsetsByYear(@Query() query: Query$OffsetsByYear): Promise<Offset[]> {
+  async solveOffsetsByYear(@Query() query: Query$OffsetsByYear): Promise<OffsetType[]> {
     try {
-      const offsets: Offset[] = await this.mathService.getOffsets(query);
+      const offsets: OffsetType[] = await this.mathService.getOffsets(query);
       return offsets;
     } catch (e) {
       throw new BadRequestException(e.message);

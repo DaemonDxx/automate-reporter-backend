@@ -13,7 +13,7 @@ import { File, FileSchema } from './schemas/file.schema';
     MulterModule.register({
       storage: diskStorage({
         destination:
-          process.env.UPLOAD_PATH || join(dirname(__dirname), 'uploads'),
+          process.env.UPLOAD_PATH || join(dirname(__dirname.replace('modules/storage', '')), 'temp'),
         filename: (req, file, callback) => {
           const date = new Date();
           callback(

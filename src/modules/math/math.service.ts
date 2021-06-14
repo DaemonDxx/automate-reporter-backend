@@ -15,9 +15,9 @@ import {
 import { Departments } from '../../typings/departments';
 import {
   ComparedData,
-  Offset,
+  OffsetType,
   PreparedData,
-} from '../../typings/modules/math/offset';
+} from '../../typings/modules/math/offsetType';
 import { FullMonthAlgorithm } from './full.month.algorithm';
 import { of } from 'rxjs';
 
@@ -30,7 +30,7 @@ export class MathService {
   async getOffsets({
     yearBefore,
     yearNow,
-  }: Query$OffsetsByYear): Promise<Offset[]> {
+  }: Query$OffsetsByYear): Promise<OffsetType[]> {
     const receptionBefore: SomeValueModel[] = await this.Value.find({
       type: TypesValue.Reception,
       year: yearBefore,
@@ -39,22 +39,31 @@ export class MathService {
     if (receptionBefore.length === 0)
       throw new Error('Отсутствуют данные по за данный период');
 
-    const result: Promise<Offset>[] = [];
+    const result: OffsetType[] = [];
 
     for (const reception of receptionBefore) {
-      result.push(
-        this.prepareData(reception as Electricity, yearBefore, yearNow),
-      );
+      try {
+        const data = await this.prepareData(
+          reception as Electricity,
+          yearBefore,
+          yearNow,
+        );
+        if (data) {
+          result.push(data);
+        }
+      } catch (e) {
+        console.log(e.message);
+      }
     }
-    return await Promise.all(result);
+    return result;
   }
 
   private async prepareData(
     reception: Electricity,
     yearBefore,
     yearNow,
-  ): Promise<Offset> {
-    const offset: Partial<Offset> = {};
+  ): Promise<OffsetType> {
+    const offset: Partial<OffsetType> = {};
     offset.month = reception.month;
     offset.department = reception.department;
     offset.receptionBefore = reception.v;
@@ -139,7 +148,7 @@ export class MathService {
     offset.temperatureNow = tempNow.v;
     offset.temperatureBefore = tempBefore.v;
 
-    return offset as Offset;
+    return offset as OffsetType;
   }
 
   solveOffset(before: Data$OffsetSolver, now: Data$OffsetSolver): number {

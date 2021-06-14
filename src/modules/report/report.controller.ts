@@ -1,33 +1,23 @@
 import {
   Body,
   Controller,
-  Delete,
-  Get,
-  Param,
   Post,
-  Put,
-  Query, Res,
+  Res,
   UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { ReportService } from './report.service';
-import { CreateReportDTO } from './dto/createReport.dto';
 import { Response } from 'express';
-import * as fs from 'fs';
-import { ReportBuilder } from './report.builder';
-import { Buffer } from 'buffer';
+import { ReportPayload } from './dto/report.payload';
 
 @Controller('report')
 export class ReportController {
-  constructor(private readonly reportBuilder: ReportBuilder) {}
+  constructor(private readonly reportService: ReportService) {}
 
   @Post()
-  async createReport(@Res() res: Response, @Body() dto: CreateReportDTO) {
-    const file = await this.reportBuilder.build(dto);
-    res.setHeader(
-      'Content-Type',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    );
-    res.setHeader('Content-Disposition', 'attachment; filename=' + 'test');
-    res.send(new Buffer(file));
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async createReport(@Body() dto: ReportPayload): Promise<string> {
+    const filename = await this.reportService.generateReport(dto);
+    return filename;
   }
 }
