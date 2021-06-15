@@ -49,27 +49,12 @@ export class TemperatureFactorStrategy
     for (const month of this.MONTHS) {
       try {
         const rangeMonth: Range = this.findRangeWithMonth(month);
+        if (!rangeMonth) continue;
         for (const department of Object.values(Departments)) {
-          const findResult = this.findCellsWithValue(department, {
-            range: {
-              s: {
-                c: 0,
-                r: rangeMonth.s.r,
-              },
-              e: {
-                c: 0,
-                r: rangeMonth.s.r + this.HEIGHT_OFFSET_IN_MONTH,
-              },
-            },
-          }).next();
-          let rowDepartment;
-          if (findResult.value) {
-            rowDepartment = findResult.value.address.r;
-          } else {
-            throw new Error(
-              `Не найден филиал ${department}, месяц ${month}, начиная от строчки ${rangeMonth.s.r}`,
-            );
-          }
+          const rowDepartment = this.findRowByDepartment(
+            department,
+            rangeMonth.s.r,
+          );
 
           for (const year of rangeOfYears) {
             const addressYear: CellAddress = this.findCellWithYear(
@@ -135,7 +120,7 @@ export class TemperatureFactorStrategy
     this.WIDTH_OFFSET_IN_MONTH = (range.to - range.from + 1) * 2;
   }
 
-  private findRangeWithMonth(month: string): Range {
+  private findRangeWithMonth(month: string): Range | null {
     for (const result of this.findCellsWithValue(month)) {
       return {
         s: result.address,
@@ -145,27 +130,29 @@ export class TemperatureFactorStrategy
         },
       };
     }
-    this.errors.push(new Error(`В файле отсутствует месяц ${month}`));
+    return null;
   }
 
   private findRowByDepartment(department: string, startRow: number): number {
-    for (const result of this.findCellsWithValue(department, {
+    const findResult = this.findCellsWithValue(department, {
       range: {
         s: {
-          r: startRow,
-          c: this.COLUMN_DEPARTMENT,
+          c: 0,
+          r: startRow
         },
         e: {
+          c: 0,
           r: startRow + this.HEIGHT_OFFSET_IN_MONTH,
-          c: this.COLUMN_DEPARTMENT,
         },
       },
-    })) {
-      return result.address.r;
-    }
-    this.errors.push(
-      new Error(`Не найден филиал ${department} от строчки ${startRow}`),
-    );
+    }).next();
+    if (findResult.value) {
+      return findResult.value.address.r;
+    } else {
+      throw new Error(
+        `Не найден филиал ${department}, начиная от строчки ${startRow}`,
+      );
+     }
   }
 
   private findCellWithYear(
